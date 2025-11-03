@@ -293,7 +293,7 @@ export default function ElectricityBillsInputPage() {
                     required
                   />
                   <p className="text-sm text-gray-500 mt-1">
-                    Penulisan "NamaGedung NomorPanel". Contoh: Modular 01
+                    Penulisan &quot;NamaGedung NomorPanel&quot;. Contoh: Modular 01
                   </p>
                 </div>
               </div>
