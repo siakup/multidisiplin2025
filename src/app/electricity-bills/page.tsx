@@ -359,7 +359,7 @@ export default function ElectricityBillsPage() {
                     <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center" style={{borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
                       <div className="flex justify-center gap-2">
                         <button
-                          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-blue-600"
                           onClick={() => handleEdit(bill)}
                         >
                           Edit
