@@ -3198,3 +3198,60 @@
 
 
 [31mAn operation failed because it depends on one or more records that were required but not found. No record was found for a delete.[39m
+[2025-11-17 10:11:44] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:11:47] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.user.findUnique()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
+[2025-11-17 10:12:14] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:14] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:27] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:27] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:27] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:53] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:53] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:53] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:12:53] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:24:49] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:24:49] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:24:49] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:24:49] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:24:49] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-17 10:24:52] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.session.delete()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
+[2025-11-17 10:24:52] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.session.delete()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
+[2025-11-17 10:24:52] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.session.delete()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
+[2025-11-17 10:24:52] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.session.delete()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
+[2025-11-17 10:24:52] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.session.delete()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
