@@ -8,7 +8,7 @@ async function main() {
     update: {},
     create: {
       email: 'admin@example.com',
-      passwordHash: 'hashedpassword', // pakai bcrypt
+      passwordHash: 'hashedpassword',
       name: 'Admin',
       role: 'ADMIN',
     },
