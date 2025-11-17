@@ -115,8 +115,19 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section className="hidden lg:block relative h-full w-full overflow-hidden bg-white p-0">
-          <div className="relative w-full h-full">
+        <section 
+          className="hidden lg:block relative h-full w-full overflow-hidden bg-white p-0" 
+          style={{
+            borderLeft: '1px solid #e5e7eb',
+            borderTopLeftRadius: '45px',
+            borderBottomLeftRadius: '45px'
+          }}
+        >
+          <div className="relative w-full h-full" style={{
+            borderTopLeftRadius: '45px',
+            borderBottomLeftRadius: '45px',
+            overflow: 'hidden'
+          }}>
             <Image
               src="/foto-login.png"
               alt="Login Illustration"
@@ -124,6 +135,10 @@ export default function LoginPage() {
               priority
               className="object-cover object-center"
               sizes="(max-width: 1024px) 0vw, 50vw"
+              style={{
+                borderTopLeftRadius: '45px',
+                borderBottomLeftRadius: '45px'
+              }}
             />
           </div>
         </section>
