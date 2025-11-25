@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
 
 interface ElectricityBill {
   id: number;
@@ -18,13 +19,18 @@ interface ElectricityBill {
   billingMonth: string;
   kwhUse: number;
   totalBills: number;
-  statusPay: string;
   vaStatus?: string;
 }
 
 export default function ElectricityBillsPage() {
   // Auto logout setelah 5 menit tidak ada aktivitas
   useAutoLogout({ idleTime: 300000 }); // 5 menit = 300000ms
+
+  const { isAuthorized, isChecking } = useRequireAuth({
+    allowedRoles: ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'],
+    allowedUsernames: ['Facility management'],
+    fallbackPath: '/dashboard',
+  });
 
   const [bills, setBills] = useState<ElectricityBill[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +42,6 @@ export default function ElectricityBillsPage() {
     bulan: '',
     jumlahKwh: '',
     tagihanListrik: '',
-    statusPay: '',
   });
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -65,7 +70,9 @@ export default function ElectricityBillsPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    const year = date.getFullYear();
+    const month = date.toLocaleDateString('id-ID', { month: 'long' });
+    return `${year} ${month}`;
   };
 
   const formatCurrency = (amount: number) => {
@@ -95,7 +102,6 @@ export default function ElectricityBillsPage() {
       bulan: `${year}-${month}`,
       jumlahKwh: String(kwhValue),
       tagihanListrik: String(totalBillsValue),
-      statusPay: bill.statusPay || 'Belum Lunas',
     });
     setShowEditModal(true);
     setEditError(null);
@@ -132,7 +138,6 @@ export default function ElectricityBillsPage() {
         billingMonth: billingMonth.toISOString(),
         kwhUse: kwhValue,
         totalBills: tagihanValue,
-        statusPay: editFormData.statusPay || 'Belum Lunas',
       });
 
       // Refresh data
@@ -161,14 +166,16 @@ export default function ElectricityBillsPage() {
       }
 
       // Prepare CSV header
-      const headers = ['No', 'Nama Panel', 'Bulan', 'kWh', 'Jumlah Tagihan', 'Status Pembayaran'];
+      const headers = ['No', 'Nama Panel', 'Bulan', 'kWh', 'Jumlah Tagihan'];
       
       // Convert bills to CSV rows
       const csvRows = [
         headers.join(','),
         ...bills.map((bill, index) => {
           const date = new Date(bill.billingMonth);
-          const month = date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+          const year = date.getFullYear();
+          const month = date.toLocaleDateString('id-ID', { month: 'long' });
+          const monthYear = `${year} ${month}`;
           // Handle Decimal type from Prisma (might be string or number)
           const totalBillsValue = typeof bill.totalBills === 'string' 
             ? parseFloat(bill.totalBills) 
@@ -181,10 +188,9 @@ export default function ElectricityBillsPage() {
           return [
             index + 1,
             `"${bill.panel?.namePanel || ''}"`,
-            `"${month}"`,
+            `"${monthYear}"`,
             kwhValue,
             totalBills,
-            `"${bill.statusPay || ''}"`
           ].join(',');
         })
       ];
@@ -223,6 +229,18 @@ export default function ElectricityBillsPage() {
     setShowExportErrorModal(false);
     setExportErrorMessage('');
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-600">Memuat...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -411,8 +429,12 @@ export default function ElectricityBillsPage() {
 
         {/* Edit Modal */}
         {showEditModal && editingBill && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ paddingTop: '80px', top: 0 }}>
-            <div className="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
+            <div
+              className="absolute inset-0 backdrop-blur-md bg-white/80"
+              onClick={handleCloseEditModal}
+            ></div>
+            <div className="relative bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[calc(100vh-120px)] overflow-y-auto shadow-2xl">
               <h2 className="text-2xl font-bold mb-6 text-gray-900">Edit Data Tagihan Listrik</h2>
               
               <form onSubmit={handleEditSubmit} className="space-y-4">
@@ -469,19 +491,6 @@ export default function ElectricityBillsPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status Pembayaran
-                  </label>
-                  <select
-                    value={editFormData.statusPay}
-                    onChange={(e) => setEditFormData({ ...editFormData, statusPay: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                  >
-                    <option value="Belum Lunas">Belum Lunas</option>
-                    <option value="Lunas">Lunas</option>
-                  </select>
-                </div>
 
                 {editError && (
                   <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">

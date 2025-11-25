@@ -25,12 +25,28 @@ export async function apiRequest<T>(
     headers,
   });
 
+  const contentType = response.headers.get('content-type') || '';
+  const hasBody = response.status !== 204 && response.status !== 205;
+
+  const parseBody = async () => {
+    if (!hasBody) return null;
+    if (contentType.includes('application/json')) {
+      return response.json();
+    }
+    const text = await response.text();
+    return text || null;
+  };
+
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Network error' }));
-    throw new Error(error.error || `HTTP ${response.status}`);
+    const errorBody = await parseBody().catch(() => null);
+    const message =
+      (errorBody && typeof errorBody === 'object' && 'error' in errorBody && (errorBody as any).error) ||
+      (typeof errorBody === 'string' && errorBody) ||
+      `HTTP ${response.status}`;
+    throw new Error(message);
   }
 
-  return response.json();
+  return (await parseBody()) as T;
 }
 
 export const api = {

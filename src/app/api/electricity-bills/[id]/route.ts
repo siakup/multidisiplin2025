@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ElectricityBillContainer } from '@/lib/features/electricity-bills/ElectricityBillContainer';
 import { parseUpdateElectricityBill } from '@/lib/features/electricity-bills/presentation/dto/UpdateElectricityBillDto';
+import { requireApiAuth } from '@/lib/server/auth/requireApiAuth';
+
+const facilityRoles = ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'];
+const facilityUsernames = ['Facility management'];
 
 // GET /api/electricity-bills/[id] - Get electricity bill by ID
 export async function GET(
@@ -8,6 +12,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireApiAuth(req, {
+      allowedRoles: facilityRoles,
+      allowedUsernames: facilityUsernames,
+    });
+    if ('response' in auth) return auth.response;
+
     const { id } = await params;
     const billId = parseInt(id, 10);
 
@@ -30,6 +40,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireApiAuth(req, {
+      allowedRoles: facilityRoles,
+      allowedUsernames: facilityUsernames,
+    });
+    if ('response' in auth) return auth.response;
+
     const { id } = await params;
     const billId = parseInt(id, 10);
 
@@ -65,6 +81,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireApiAuth(req, {
+      allowedRoles: facilityRoles,
+      allowedUsernames: facilityUsernames,
+    });
+    if ('response' in auth) return auth.response;
+
     const { id } = await params;
     const billId = parseInt(id, 10);
 

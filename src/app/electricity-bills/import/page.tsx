@@ -5,10 +5,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
 
 export default function ImportDataPage() {
   // Auto logout setelah 5 menit tidak ada aktivitas
   useAutoLogout({ idleTime: 300000 });
+
+  const { isAuthorized, isChecking } = useRequireAuth({
+    allowedRoles: ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'],
+    allowedUsernames: ['Facility management'],
+    fallbackPath: '/dashboard',
+  });
 
   const router = useRouter();
   const [dragActive, setDragActive] = useState(false);
@@ -124,7 +131,7 @@ export default function ImportDataPage() {
         const row = dataRows[i];
         
         if (row.length < 4) {
-          errors.push(`Baris ${i + 2}: Data tidak lengkap`);
+          errors.push(`Baris ${i + 2}: Data tidak lengkap (minimal 4 kolom: Nama Panel, Bulan, kWh, Jumlah Tagihan)`);
           continue;
         }
 
@@ -133,7 +140,6 @@ export default function ImportDataPage() {
           const bulan = row[1]?.trim() || '';
           const kwhUse = parseFloat(row[2]?.trim() || '0');
           const totalBills = parseFloat(row[3]?.replace(/[^\d.]/g, '') || '0');
-          const statusPay = row[4]?.trim() || 'Belum Lunas';
 
           // Validasi
           if (!panelName) {
@@ -172,7 +178,6 @@ export default function ImportDataPage() {
             billingMonth: billingMonth.toISOString(),
             kwhUse,
             totalBills,
-            statusPay,
             vaStatus: ''
           });
 
@@ -204,13 +209,13 @@ export default function ImportDataPage() {
 
   const handleDownloadTemplate = () => {
     // Create CSV template
-    const headers = ['Nama Panel', 'Bulan (YYYY-MM)', 'kWh', 'Jumlah Tagihan', 'Status Pembayaran'];
-    const exampleRow = ['GL 01', '2024-01', '1500.50', '2500000', 'Belum Lunas'];
+    const headers = ['Nama Panel', 'Bulan (YYYY-MM)', 'kWh', 'Jumlah Tagihan'];
+    const exampleRow = ['GL 01', '2024-01', '1500.50', '2500000'];
     
     const csvContent = [
       headers.join(','),
       exampleRow.join(','),
-      'GL 02,2024-02,2000.00,3000000,Lunas'
+      'GL 02,2024-02,2000.00,3000000'
     ].join('\n');
     
     // Create blob and download
@@ -234,6 +239,18 @@ export default function ImportDataPage() {
   const handleCloseDownloadModal = () => {
     setShowDownloadModal(false);
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-600">Memuat...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans">

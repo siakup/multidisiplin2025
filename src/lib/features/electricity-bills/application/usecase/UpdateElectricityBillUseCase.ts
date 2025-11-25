@@ -13,7 +13,6 @@ export class UpdateElectricityBillUseCase {
       kwhUse?: number;
       vaStatus?: string;
       totalBills?: number;
-      statusPay?: string;
     }
   ) {
     const existingBill = await this.billRepo.findById(id);

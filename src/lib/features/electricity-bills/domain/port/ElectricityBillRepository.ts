@@ -9,7 +9,6 @@ export interface ElectricityBillRepository {
     kwhUse: number;
     vaStatus?: string;
     totalBills: number;
-    statusPay: string;
   }): Promise<ElectricityBill>;
 
   findById(id: number): Promise<ElectricityBill | null>;
@@ -28,7 +27,6 @@ export interface ElectricityBillRepository {
       kwhUse?: number;
       vaStatus?: string;
       totalBills?: number;
-      statusPay?: string;
     }
   ): Promise<ElectricityBill>;
 

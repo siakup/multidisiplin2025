@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
 
 interface Panel {
   id: number;
@@ -14,6 +15,12 @@ interface Panel {
 export default function ElectricityBillsInputPage() {
   // Auto logout setelah 5 menit tidak ada aktivitas
   useAutoLogout({ idleTime: 300000 }); // 5 menit = 300000ms
+
+  const { isAuthorized, isChecking } = useRequireAuth({
+    allowedRoles: ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'],
+    allowedUsernames: ['Facility management'],
+    fallbackPath: '/dashboard',
+  });
 
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -121,7 +128,6 @@ export default function ElectricityBillsInputPage() {
         billingMonth: billingMonth.toISOString(),
         kwhUse: kwhValue,
         totalBills: tagihanValue,
-        statusPay: 'Belum Lunas', // Default value
         vaStatus: '' // Optional
       });
 
@@ -158,6 +164,18 @@ export default function ElectricityBillsInputPage() {
     setShowPanelBaruInput(true);
     setShowNamaPanelDropdown(false);
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-600">Memuat...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans">

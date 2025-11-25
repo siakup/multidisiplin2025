@@ -7,7 +7,6 @@ export const createElectricityBillSchema = z.object({
   kwhUse: z.number().positive('kWh usage must be positive'),
   vaStatus: z.string().optional(),
   totalBills: z.number().positive('Total bills must be positive'),
-  statusPay: z.string().min(1, 'Payment status is required'),
 });
 
 export type CreateElectricityBillRequest = z.infer<typeof createElectricityBillSchema>;

@@ -10,7 +10,6 @@ export class PrismaElectricityBillRepository implements ElectricityBillRepositor
     kwhUse: number;
     vaStatus?: string;
     totalBills: number;
-    statusPay: string;
   }): Promise<ElectricityBill> {
     return prisma.electricityBill.create({
       data: {
@@ -20,7 +19,6 @@ export class PrismaElectricityBillRepository implements ElectricityBillRepositor
         kwhUse: data.kwhUse,
         vaStatus: data.vaStatus,
         totalBills: data.totalBills,
-        statusPay: data.statusPay,
       },
       include: {
         panel: true,
@@ -88,7 +86,6 @@ export class PrismaElectricityBillRepository implements ElectricityBillRepositor
       kwhUse?: number;
       vaStatus?: string;
       totalBills?: number;
-      statusPay?: string;
     }
   ): Promise<ElectricityBill> {
     return prisma.electricityBill.update({
@@ -99,7 +96,6 @@ export class PrismaElectricityBillRepository implements ElectricityBillRepositor
         ...(data.kwhUse !== undefined && { kwhUse: data.kwhUse }),
         ...(data.vaStatus !== undefined && { vaStatus: data.vaStatus }),
         ...(data.totalBills !== undefined && { totalBills: data.totalBills }),
-        ...(data.statusPay !== undefined && { statusPay: data.statusPay }),
       },
       include: {
         panel: true,

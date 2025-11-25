@@ -2,10 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ElectricityBillContainer } from '@/lib/features/electricity-bills/ElectricityBillContainer';
 import { parseCreateElectricityBill } from '@/lib/features/electricity-bills/presentation/dto/CreateElectricityBillDto';
 import { parseListElectricityBills } from '@/lib/features/electricity-bills/presentation/dto/ListElectricityBillsDto';
+import { requireApiAuth } from '@/lib/server/auth/requireApiAuth';
+
+const facilityRoles = ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'];
+const facilityUsernames = ['Facility management'];
 
 // GET /api/electricity-bills - List all electricity bills with optional filters
 export async function GET(req: NextRequest) {
   try {
+    const auth = await requireApiAuth(req, {
+      allowedRoles: facilityRoles,
+      allowedUsernames: facilityUsernames,
+    });
+    if ('response' in auth) return auth.response;
+
     const { searchParams } = new URL(req.url);
     const filters: any = {};
 
@@ -31,6 +41,12 @@ export async function GET(req: NextRequest) {
 // POST /api/electricity-bills - Create a new electricity bill
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireApiAuth(req, {
+      allowedRoles: facilityRoles,
+      allowedUsernames: facilityUsernames,
+    });
+    if ('response' in auth) return auth.response;
+
     const body = await req.json();
     const data = parseCreateElectricityBill(body);
 
@@ -44,7 +60,6 @@ export async function POST(req: NextRequest) {
       kwhUse: data.kwhUse,
       vaStatus: data.vaStatus,
       totalBills: data.totalBills,
-      statusPay: data.statusPay,
     });
 
     return NextResponse.json(bill, { status: 201 });

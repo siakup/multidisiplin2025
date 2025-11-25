@@ -4,37 +4,46 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { isRoleAllowed, isUsernameAllowed } from '@/lib/common/utils/identity';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [userUsername, setUserUsername] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
     // Ambil username dari localStorage
-    const username = localStorage.getItem('userUsername');
-    setUserUsername(username);
+    const syncUserInfo = () => {
+      const username = localStorage.getItem('userUsername');
+      const role = localStorage.getItem('userRole');
+      setUserUsername(username);
+      setUserRole(role);
+    };
 
-    // Listen untuk perubahan localStorage (jika ada update di halaman lain)
+    syncUserInfo();
+
     const handleStorageChange = () => {
-      const updatedUsername = localStorage.getItem('userUsername');
-      setUserUsername(updatedUsername);
+      syncUserInfo();
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
-    // Juga listen untuk custom event untuk update di tab yang sama
-    const handleCustomStorageChange = () => {
-      const updatedUsername = localStorage.getItem('userUsername');
-      setUserUsername(updatedUsername);
-    };
-
-    window.addEventListener('userUpdated', handleCustomStorageChange);
+    window.addEventListener('userUpdated', handleStorageChange);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userUpdated', handleCustomStorageChange);
+      window.removeEventListener('userUpdated', handleStorageChange);
     };
   }, []);
+
+  const facilityRoles = ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'];
+  const facilityUsernames = ['Facility management'];
+  const studentRoles = ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'];
+  const studentUsernames = ['student housing', 'student hausing'];
+
+  const canAccessElectricity =
+    isRoleAllowed(userRole, facilityRoles) || isUsernameAllowed(userUsername, facilityUsernames);
+  const canAccessStudentHousing =
+    isRoleAllowed(userRole, studentRoles) || isUsernameAllowed(userUsername, studentUsernames);
 
   return (
     <nav className="bg-white w-full shadow-sm font-sans">
@@ -89,7 +98,7 @@ export default function Navbar() {
               </Link>
 
             {/* Tagihan Listrik - hanya untuk Facility management */}
-            {userUsername === 'Facility management' && (
+            {canAccessElectricity && (
               <Link
                 href="/electricity-bills"
                 className={`flex items-center space-x-2 transition-colors duration-200 px-4 py-2 rounded-lg ${
@@ -125,8 +134,8 @@ export default function Navbar() {
                 </Link>
             )}
 
-            {/* Asrama Beasiswa - hanya untuk student hausing */}
-            {userUsername === 'student hausing' && (
+            {/* Asrama Beasiswa - hanya untuk student housing */}
+            {canAccessStudentHousing && (
               <Link
                 href="/student-housing"
                 className={`flex items-center space-x-2 transition-colors duration-200 px-4 py-2 rounded-lg ${

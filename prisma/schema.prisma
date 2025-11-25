@@ -58,7 +58,6 @@ model ElectricityBill {
   kwhUse     Decimal  @map("kwh_use") @db.Decimal(10, 2)
   vaStatus   String?  @map("VA_status")
   totalBills Decimal  @map("Total_Bills") @db.Decimal(10, 2)
-  statusPay  String   @map("Status_Pay")
   createdAt  DateTime @default(now()) @map("Created_at")
 
   panel Panel @relation("PanelBills", fields: [panelId], references: [id], onDelete: Cascade)
