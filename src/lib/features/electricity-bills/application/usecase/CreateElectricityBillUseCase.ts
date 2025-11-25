@@ -12,6 +12,7 @@ export class CreateElectricityBillUseCase {
     kwhUse: number;
     vaStatus?: string;
     totalBills: number;
+    statusPay?: string;
   }) {
     // Validate panel exists
     const panel = await prisma.panel.findUnique({ where: { id: data.panelId } });

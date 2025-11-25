@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
       kwhUse: data.kwhUse,
       vaStatus: data.vaStatus,
       totalBills: data.totalBills,
+      statusPay: data.statusPay,
     });
 
     return NextResponse.json(bill, { status: 201 });

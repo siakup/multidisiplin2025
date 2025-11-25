@@ -10,6 +10,7 @@ export class PrismaElectricityBillRepository implements ElectricityBillRepositor
     kwhUse: number;
     vaStatus?: string;
     totalBills: number;
+    statusPay?: string;
   }): Promise<ElectricityBill> {
     return prisma.electricityBill.create({
       data: {
@@ -19,6 +20,7 @@ export class PrismaElectricityBillRepository implements ElectricityBillRepositor
         kwhUse: data.kwhUse,
         vaStatus: data.vaStatus,
         totalBills: data.totalBills,
+        statusPay: data.statusPay || 'Belum Lunas',
       },
       include: {
         panel: true,

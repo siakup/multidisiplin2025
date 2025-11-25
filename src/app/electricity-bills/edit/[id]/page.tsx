@@ -171,7 +171,6 @@ export default function ElectricityBillsEditPage() {
         billingMonth: billingMonth.toISOString(),
         kwhUse: kwhValue,
         totalBills: tagihanValue,
-        statusPay: 'Belum Lunas', // Default value, bisa diubah jika diperlukan
       });
 
       setShowSuccessModal(true);

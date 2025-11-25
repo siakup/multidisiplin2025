@@ -331,7 +331,13 @@
 					"name": "Get All Bills",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/api/electricity-bills",
 							"host": [
@@ -342,7 +348,7 @@
 								"electricity-bills"
 							]
 						},
-						"description": "Mendapatkan semua electricity bills"
+						"description": "Mendapatkan semua electricity bills. **PENTING**: Memerlukan autentikasi. Pastikan sudah login terlebih dahulu."
 					},
 					"response": []
 				},
@@ -350,7 +356,13 @@
 					"name": "Get Bills with Filters",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/api/electricity-bills?userId=1&panelId=1&billingMonth=2024-01-01",
 							"host": [
@@ -415,11 +427,21 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"panelId\": 1,\n  \"userId\": 1,\n  \"billingMonth\": \"2024-01-01\",\n  \"kwhUse\": 1500.50,\n  \"totalBills\": 2500000.00,\n  \"statusPay\": \"Belum Lunas\",\n  \"vaStatus\": \"Active\"\n}"
+							"raw": "{\n  \"panelId\": 1,\n  \"userId\": 1,\n  \"billingMonth\": \"2024-01-01\",\n  \"kwhUse\": 1500.50,\n  \"totalBills\": 2500000.00,\n  \"vaStatus\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{base_url}}/api/electricity-bills",
@@ -431,7 +453,7 @@
 								"electricity-bills"
 							]
 						},
-						"description": "Membuat electricity bill baru. Pastikan panelId dan userId sudah ada di database."
+						"description": "Membuat electricity bill baru. **PENTING**: Pastikan sudah login terlebih dahulu untuk mendapatkan accessToken. Pastikan panelId dan userId sudah ada di database. Field statusPay tidak perlu dikirim karena akan otomatis di-set menjadi 'Belum Lunas' oleh database."
 					},
 					"response": []
 				},
@@ -439,7 +461,13 @@
 					"name": "Get Bill by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/api/electricity-bills/{{billId}}",
 							"host": [
@@ -463,6 +491,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -488,7 +521,13 @@
 					"name": "Delete Electricity Bill",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{base_url}}/api/electricity-bills/{{billId}}",
 							"host": [
