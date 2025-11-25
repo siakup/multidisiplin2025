@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
@@ -32,19 +33,10 @@ export default function ElectricityBillsPage() {
     fallbackPath: '/dashboard',
   });
 
+  const router = useRouter();
   const [bills, setBills] = useState<ElectricityBill[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingBill, setEditingBill] = useState<ElectricityBill | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    panelId: 0,
-    bulan: '',
-    jumlahKwh: '',
-    tagihanListrik: '',
-  });
-  const [editLoading, setEditLoading] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
   const [showExportSuccessModal, setShowExportSuccessModal] = useState(false);
   const [showExportErrorModal, setShowExportErrorModal] = useState(false);
   const [exportErrorMessage, setExportErrorMessage] = useState<string>('');
@@ -83,78 +75,7 @@ export default function ElectricityBillsPage() {
   };
 
   const handleEdit = (bill: ElectricityBill) => {
-    setEditingBill(bill);
-    // Format billingMonth untuk input date (YYYY-MM)
-    const billingDate = new Date(bill.billingMonth);
-    const year = billingDate.getFullYear();
-    const month = String(billingDate.getMonth() + 1).padStart(2, '0');
-    
-    // Handle Decimal type from Prisma (might be string or number)
-    const kwhValue = typeof bill.kwhUse === 'string' 
-      ? parseFloat(bill.kwhUse) 
-      : Number(bill.kwhUse);
-    const totalBillsValue = typeof bill.totalBills === 'string'
-      ? parseFloat(bill.totalBills)
-      : Number(bill.totalBills);
-    
-    setEditFormData({
-      panelId: bill.panel?.id || 0,
-      bulan: `${year}-${month}`,
-      jumlahKwh: String(kwhValue),
-      tagihanListrik: String(totalBillsValue),
-    });
-    setShowEditModal(true);
-    setEditError(null);
-  };
-
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingBill) return;
-
-    setEditLoading(true);
-    setEditError(null);
-
-    try {
-      // Validasi
-      if (!editFormData.bulan || !editFormData.jumlahKwh || !editFormData.tagihanListrik) {
-        throw new Error('Silahkan isi semua field yang wajib');
-      }
-
-      const kwhValue = parseFloat(editFormData.jumlahKwh);
-      const tagihanValue = parseFloat(editFormData.tagihanListrik);
-
-      if (isNaN(kwhValue) || kwhValue <= 0) {
-        throw new Error('Jumlah kWh harus berupa angka yang valid');
-      }
-      if (isNaN(tagihanValue) || tagihanValue <= 0) {
-        throw new Error('Tagihan listrik harus berupa angka yang valid');
-      }
-
-      const billingMonth = new Date(editFormData.bulan + '-01');
-
-      // Update data
-      await api.put(`/electricity-bills/${editingBill.id}`, {
-        panelId: editFormData.panelId,
-        billingMonth: billingMonth.toISOString(),
-        kwhUse: kwhValue,
-        totalBills: tagihanValue,
-      });
-
-      // Refresh data
-      await fetchBills();
-      setShowEditModal(false);
-      setEditingBill(null);
-    } catch (err: any) {
-      setEditError(err.message || 'Gagal mengupdate data');
-    } finally {
-      setEditLoading(false);
-    }
-  };
-
-  const handleCloseEditModal = () => {
-    setShowEditModal(false);
-    setEditingBill(null);
-    setEditError(null);
+    router.push(`/electricity-bills/edit/${bill.id}`);
   };
 
   const handleExportData = () => {
@@ -402,21 +323,6 @@ export default function ElectricityBillsPage() {
                             />
                           </svg>
                         </button>
-                        {/* <button
-                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                          onClick={async () => {
-                            if (confirm('Yakin ingin menghapus?')) {
-                              try {
-                                await api.delete(`/electricity-bills/${bill.id}`);
-                                fetchBills();
-                              } catch (err) {
-                                alert('Gagal menghapus data');
-                              }
-                            }
-                          }}
-                        >
-                          Hapus
-                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -426,99 +332,6 @@ export default function ElectricityBillsPage() {
           </table>
           </div>
         </div>
-
-        {/* Edit Modal */}
-        {showEditModal && editingBill && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
-            <div
-              className="absolute inset-0 backdrop-blur-md bg-white/80"
-              onClick={handleCloseEditModal}
-            ></div>
-            <div className="relative bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[calc(100vh-120px)] overflow-y-auto shadow-2xl">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900">Edit Data Tagihan Listrik</h2>
-              
-              <form onSubmit={handleEditSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nama Panel
-                  </label>
-                  <input
-                    type="text"
-                    value={editingBill.panel?.namePanel || '-'}
-                    disabled
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-gray-100"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Bulan <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="month"
-                    value={editFormData.bulan}
-                    onChange={(e) => setEditFormData({ ...editFormData, bulan: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Jumlah kWh <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editFormData.jumlahKwh}
-                    onChange={(e) => setEditFormData({ ...editFormData, jumlahKwh: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tagihan Listrik <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editFormData.tagihanListrik}
-                    onChange={(e) => setEditFormData({ ...editFormData, tagihanListrik: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                    required
-                  />
-                </div>
-
-
-                {editError && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                    {editError}
-                  </div>
-                )}
-
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={handleCloseEditModal}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                    disabled={editLoading}
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
-                    disabled={editLoading}
-                  >
-                    {editLoading ? 'Menyimpan...' : 'Simpan'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
 
         {/* Export Success Modal */}
         {showExportSuccessModal && (
