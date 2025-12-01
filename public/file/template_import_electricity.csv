@@ -1,0 +1,4 @@
+panelName,month,kWhAmount,electricityCost,paymentStatus
+  GL 01,2025-10,35000,9000000,Lunas
+  GL 02,2025-09,3500,700000,Belum Lunas
+  ,,,,

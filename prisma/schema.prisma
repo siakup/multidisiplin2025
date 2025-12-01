@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement()) @map("id_User")
+  username     String?  @unique @map("Username")
+  passwordHash String   @map("Password")
+  email        String?  @unique
+  name         String?
+  role         String   @default("USER") @map("Role")
+
+  sessions        Session[]         @relation("UserSessions")
+  electricityBills ElectricityBill[] @relation("UserBills")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@map("User")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  user         User     @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int
+  refreshToken String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+model Panel {
+  id        Int      @id @default(autoincrement()) @map("id_Panel")
+  namePanel String   @map("Name_Panel")
+
+  electricityBills ElectricityBill[] @relation("PanelBills")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@map("Panel")
+}
+
+model ElectricityBill {
+  id         Int      @id @default(autoincrement()) @map("id_Bills")
+  panelId    Int      @map("id_Panel")
+  userId     Int      @map("id_User")
+  billingMonth DateTime @map("Billing_month")
+  kwhUse     Decimal  @map("kwh_use") @db.Decimal(10, 2)
+  vaStatus   String?  @map("VA_status")
+  totalBills Decimal  @map("Total_Bills") @db.Decimal(10, 2)
+  statusPay  String   @default("Belum Lunas") @map("Status_Pay")
+  createdAt  DateTime @default(now()) @map("Created_at")
+
+  panel Panel @relation("PanelBills", fields: [panelId], references: [id], onDelete: Cascade)
+  user  User  @relation("UserBills", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Electricity_Bills")
+  @@index([panelId])
+  @@index([userId])
+  @@index([billingMonth])
+}

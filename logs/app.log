@@ -1,0 +1,17 @@
+[2025-11-25 14:47:25] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-25 14:48:31] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-25 14:48:31] [32minfo[39m: [32m[Prisma Info] Starting a postgresql pool with 17 connections.[39m
+[2025-11-25 14:48:34] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.user.findUnique()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
+[2025-11-25 14:48:34] [31merror[39m: [31m[Prisma Error] [39m
+[31mInvalid `prisma.user.findUnique()` invocation:[39m
+
+
+[31mCan't reach database server at `db:5432`[39m
+
+[31mPlease make sure your database server is running at `db:5432`.[39m
