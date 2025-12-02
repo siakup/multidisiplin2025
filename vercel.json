@@ -1,0 +1,29 @@
+# Vercel Configuration for Next.js
+{
+  "version": 2,
+  "name": "electricity-bills-api",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/docs",
+      "dest": "/docs"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "regions": ["sin1"]
+}

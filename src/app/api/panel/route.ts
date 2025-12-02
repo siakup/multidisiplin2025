@@ -2,7 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PanelContainer } from '@/lib/features/panel/PanelContainer';
 import { parseCreatePanel } from '@/lib/features/panel/presentation/dto/CreatePanelDto';
 
-// GET /api/panel - List all panels
+/**
+ * @swagger
+ * /api/panel:
+ *   get:
+ *     tags:
+ *       - Panel
+ *     summary: List semua panel
+ *     description: Mengambil daftar semua panel yang tersedia
+ *     responses:
+ *       200:
+ *         description: Daftar panel berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Panel'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(req: NextRequest) {
   try {
     const container = PanelContainer.getInstance();
@@ -14,7 +37,53 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/panel - Create a new panel
+/**
+ * @swagger
+ * /api/panel:
+ *   post:
+ *     tags:
+ *       - Panel
+ *     summary: Buat panel baru
+ *     description: |
+ *       Membuat panel baru dengan nama panel.
+ *       
+ *       **Catatan:** Panel yang dibuat akan tersimpan dengan timestamp createdAt dan updatedAt.
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreatePanelRequest'
+ *           example:
+ *             namePanel: "Test Panel 01"
+ *     responses:
+ *       201:
+ *         description: Panel berhasil dibuat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Panel'
+ *       400:
+ *         description: Bad request - data tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - token tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

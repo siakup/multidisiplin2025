@@ -14,7 +14,8 @@
     "db:deploy": "npx --yes prisma migrate deploy && npx --yes prisma generate",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "convert:swagger": "node scripts/convert-postman-to-swagger.js"
   },
   "dependencies": {
     "@prisma/client": "^6.16.3",
@@ -26,7 +27,11 @@
     "prop-types": "^15.8.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "swagger-ui-react": "^5.30.3",
     "winston": "^3.18.0",
+    "yamljs": "^0.3.0",
     "zod": "^4.1.11"
   },
   "devDependencies": {
@@ -48,6 +53,7 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.0",
     "jest": "^30.2.0",
+    "postman-to-openapi": "^1.7.3",
     "prettier": "^3.5.3",
     "prisma": "^6.16.3",
     "sqlite3": "^5.1.7",

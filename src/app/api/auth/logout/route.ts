@@ -2,6 +2,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthContainer } from '@/lib/features/auth/AuthContainer';
 
+/**
+ * @swagger
+ * /api/auth/logout:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Logout user
+ *     description: |
+ *       Logout user dan invalidate refresh token.
+ *       
+ *       **PENTING:** Gunakan refresh token (bukan access token) di Authorization header.
+ *       
+ *       Format: `Bearer <refresh_token>`
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout berhasil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageResponse'
+ *       401:
+ *         description: Unauthorized - token tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(req: NextRequest) {
   try {
     const authHeader = req.headers.get('Authorization');

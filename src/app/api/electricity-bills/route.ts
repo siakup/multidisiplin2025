@@ -7,7 +7,99 @@ import { requireApiAuth } from '@/lib/server/auth/requireApiAuth';
 const facilityRoles = ['Facility management', 'facility_management', 'FACILITY_MANAGEMENT'];
 const facilityUsernames = ['Facility management'];
 
-// GET /api/electricity-bills - List all electricity bills with optional filters
+/**
+ * @swagger
+ * /api/electricity-bills:
+ *   get:
+ *     tags:
+ *       - Electricity Bills
+ *     summary: List semua tagihan listrik
+ *     description: |
+ *       Mendapatkan semua electricity bills dengan filter opsional.
+ *       
+ *       **PENTING:** Memerlukan autentikasi. Pastikan sudah login terlebih dahulu.
+ *       
+ *       **Hak Akses:** Hanya user dengan role 'Facility management' yang bisa mengakses endpoint ini
+ *       
+ *       **Filter yang tersedia:**
+ *       - userId: Filter berdasarkan ID user
+ *       - panelId: Filter berdasarkan ID panel
+ *       - billingMonth: Filter berdasarkan bulan tagihan (format: YYYY-MM-DD)
+ *       
+ *       Semua filter bersifat opsional. Jika tidak ada filter, akan mengembalikan semua tagihan.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *         description: Filter berdasarkan user ID
+ *       - in: query
+ *         name: panelId
+ *         schema:
+ *           type: integer
+ *         example: 1
+ *         description: Filter berdasarkan panel ID
+ *       - in: query
+ *         name: billingMonth
+ *         schema:
+ *           type: string
+ *           format: date
+ *         example: "2024-01-01"
+ *         description: Filter berdasarkan bulan tagihan (format YYYY-MM-DD)
+ *     responses:
+ *       200:
+ *         description: Daftar tagihan berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ElectricityBill'
+ *       401:
+ *         description: Unauthorized - token tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *   post:
+ *     summary: Buat tagihan listrik baru
+ *     description: Membuat tagihan listrik baru dengan data yang diberikan
+ *     tags: [Electricity Bills]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateElectricityBillRequest'
+ *     responses:
+ *       201:
+ *         description: Tagihan berhasil dibuat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ElectricityBill'
+ *       400:
+ *         description: Request tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function GET(req: NextRequest) {
   try {
     const auth = await requireApiAuth(req, {
@@ -38,7 +130,65 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST /api/electricity-bills - Create a new electricity bill
+/**
+ * @swagger
+ * /api/electricity-bills:
+ *   post:
+ *     tags:
+ *       - Electricity Bills
+ *     summary: Buat tagihan listrik baru
+ *     description: |
+ *       Membuat electricity bill baru.
+ *       
+ *       **PENTING:**
+ *       - Pastikan sudah login terlebih dahulu untuk mendapatkan accessToken
+ *       - Pastikan panelId dan userId sudah ada di database
+ *       - Field statusPay tidak perlu dikirim karena akan otomatis di-set menjadi 'Belum Lunas' oleh database
+ *       - Format billingMonth: YYYY-MM-DD
+ *       - kwhUse dan totalBills menggunakan tipe decimal/float
+ *       
+ *       **Hak Akses:** Hanya user dengan role 'Facility management' yang bisa mengakses endpoint ini
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateElectricityBillRequest'
+ *           example:
+ *             panelId: 1
+ *             userId: 1
+ *             billingMonth: "2024-01-01"
+ *             kwhUse: 1500.50
+ *             totalBills: 2500000.00
+ *             vaStatus: ""
+ *     responses:
+ *       201:
+ *         description: Tagihan berhasil dibuat
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ElectricityBill'
+ *       400:
+ *         description: Bad request - data tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized - token tidak valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 export async function POST(req: NextRequest) {
   try {
     const auth = await requireApiAuth(req, {

@@ -1,14 +1,23 @@
-# Next.js Full Stack Template
+# Electricity Bills Management System API
 
-Sebuah template lengkap untuk pengembangan aplikasi full-stack dengan Next.js, TypeScript, dan arsitektur yang
-terstruktur.
+Sistem manajemen tagihan listrik dengan Next.js, TypeScript, dan arsitektur yang terstruktur.
+
+## 📚 API Documentation
+
+**Live Documentation (Swagger UI):**
+- 🔗 Local: http://localhost:3000/docs
+- 🌐 Production: https://your-api.vercel.app/docs
+
+**OpenAPI Specification:**
+- 📄 JSON: http://localhost:3000/api/docs/swagger.json
 
 ## 🚀 Fitur Utama
 
-- **Framework**: Next.js 14 dengan App Router
+- **Framework**: Next.js 15 dengan App Router
 - **Language**: TypeScript
-- **Database**: PostgreSQL dengan Prisma ORM
+- **Database**: PostgreSQL/MySQL dengan Prisma ORM
 - **Authentication**: JWT-based auth system
+- **API Documentation**: OpenAPI 3.0 (Swagger UI)
 - **Testing**: Jest dengan coverage reporting
 - **Architecture**: Clean Architecture & Domain-Driven Design
 - **Containerization**: Docker & Docker Compose
@@ -137,6 +146,60 @@ docker-compose up -d
 # Atau untuk development
 docker-compose -f docker-compose-dev.yml up -d
 ```
+
+## 📖 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register user baru
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+- `POST /api/auth/refresh` - Refresh access token
+
+### Panel Management
+- `GET /api/panel` - List semua panel
+- `POST /api/panel` - Buat panel baru
+- `GET /api/panel/{id}` - Get panel by ID
+- `PUT /api/panel/{id}` - Update panel
+- `DELETE /api/panel/{id}` - Delete panel
+
+### Electricity Bills
+- `GET /api/electricity-bills` - List semua tagihan (with filters)
+- `POST /api/electricity-bills` - Buat tagihan baru
+- `GET /api/electricity-bills/{id}` - Get tagihan by ID
+- `PUT /api/electricity-bills/{id}` - Update tagihan
+- `DELETE /api/electricity-bills/{id}` - Delete tagihan
+
+**📚 Untuk dokumentasi lengkap, buka:** http://localhost:3000/docs
+
+## 🌐 Deployment ke Production
+
+### Quick Deploy ke Vercel (5 menit!)
+
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login
+vercel login
+
+# Deploy
+vercel --prod
+```
+
+**Atau gunakan script:**
+```bash
+# Windows
+.\deploy-vercel.ps1
+
+# Linux/Mac
+./deploy-vercel.sh
+```
+
+**Panduan Lengkap:**
+- 📘 [DEPLOY_README.md](./DEPLOY_README.md) - Quick start guide
+- 📗 [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Complete deployment guide
+
+**Hasil Deploy:** `https://your-api.vercel.app/docs`
 
 ## 🧪 Testing
 

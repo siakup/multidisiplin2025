@@ -40,6 +40,11 @@ export default function ElectricityBillsPage() {
   const [showExportSuccessModal, setShowExportSuccessModal] = useState(false);
   const [showExportErrorModal, setShowExportErrorModal] = useState(false);
   const [exportErrorMessage, setExportErrorMessage] = useState<string>('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [billToDelete, setBillToDelete] = useState<ElectricityBill | null>(null);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showDeleteErrorModal, setShowDeleteErrorModal] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState<string>('');
 
   useEffect(() => {
     fetchBills();
@@ -76,6 +81,47 @@ export default function ElectricityBillsPage() {
 
   const handleEdit = (bill: ElectricityBill) => {
     router.push(`/electricity-bills/edit/${bill.id}`);
+  };
+
+  const handleDeleteClick = (bill: ElectricityBill) => {
+    setBillToDelete(bill);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!billToDelete) return;
+
+    try {
+      await api.delete(`/electricity-bills/${billToDelete.id}`);
+      
+      // Refresh data setelah delete
+      await fetchBills();
+      
+      // Tutup modal konfirmasi dan tampilkan success modal
+      setShowDeleteModal(false);
+      setBillToDelete(null);
+      setShowDeleteSuccessModal(true);
+    } catch (err: any) {
+      console.error('Error deleting bill:', err);
+      setDeleteErrorMessage(err.message || 'Gagal menghapus data');
+      setShowDeleteModal(false);
+      setBillToDelete(null);
+      setShowDeleteErrorModal(true);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setBillToDelete(null);
+  };
+
+  const handleCloseDeleteSuccessModal = () => {
+    setShowDeleteSuccessModal(false);
+  };
+
+  const handleCloseDeleteErrorModal = () => {
+    setShowDeleteErrorModal(false);
+    setDeleteErrorMessage('');
   };
 
   const handleExportData = () => {
@@ -323,6 +369,32 @@ export default function ElectricityBillsPage() {
                             />
                           </svg>
                         </button>
+                        <button
+                          className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
+                          style={{
+                            backgroundColor: '#EF4444',
+                            width: '32px',
+                            height: '32px',
+                            padding: '0'
+                          }}
+                          onClick={() => handleDeleteClick(bill)}
+                          title="Delete"
+                        >
+                          <svg
+                            className="w-5 h-5 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -434,6 +506,196 @@ export default function ElectricityBillsPage() {
                 </h3>
                 <p className="text-sm text-gray-500">
                   {exportErrorMessage || '*Terjadi kesalahan saat mengekspor data'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && billToDelete && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
+            <div 
+              className="absolute inset-0 backdrop-blur-md bg-white/20"
+              onClick={handleCancelDelete}
+            ></div>
+            
+            <div 
+              className="relative bg-white rounded-lg p-6"
+              style={{
+                width: '450px',
+                boxShadow: '0 35px 60px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <button
+                onClick={handleCancelDelete}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="flex justify-center mb-4">
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: '#EF4444',
+                    boxShadow: '0 15px 35px -5px rgba(239, 68, 68, 0.6), 0 0 0 1px rgba(239, 68, 68, 0.2)'
+                  }}
+                >
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Konfirmasi Hapus Data
+                </h3>
+                <p className="text-gray-600 mb-1">
+                  Apakah Anda yakin ingin menghapus data tagihan untuk:
+                </p>
+                <p className="font-semibold text-gray-900">
+                  {billToDelete.panel?.namePanel} - {formatDate(billToDelete.billingMonth)}
+                </p>
+                <p className="text-sm text-red-600 mt-2">
+                  Data yang dihapus tidak dapat dikembalikan!
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={handleCancelDelete}
+                  className="px-6 py-2.5 rounded-lg font-medium transition-colors duration-200 border"
+                  style={{
+                    backgroundColor: '#fff',
+                    borderColor: '#d1d5db',
+                    color: '#374151'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f3f4f6'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#fff'; }}
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-200"
+                  style={{
+                    backgroundColor: '#EF4444'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#DC2626'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#EF4444'; }}
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Success Modal */}
+        {showDeleteSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
+            <div 
+              className="absolute inset-0 backdrop-blur-md bg-white/20"
+              onClick={handleCloseDeleteSuccessModal}
+            ></div>
+            
+            <div 
+              className="relative bg-white rounded-lg"
+              style={{
+                width: '408px',
+                height: '226px',
+                boxShadow: '0 35px 60px -12px rgba(94, 161, 39, 0.5), 0 0 0 1px rgba(94, 161, 39, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <button
+                onClick={handleCloseDeleteSuccessModal}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="flex justify-center mb-4">
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: '#5EA127',
+                    boxShadow: '0 15px 35px -5px rgba(94, 161, 39, 0.6), 0 0 0 1px rgba(94, 161, 39, 0.2)'
+                  }}
+                >
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Data berhasil dihapus!
+                </h3>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Error Modal */}
+        {showDeleteErrorModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
+            <div 
+              className="absolute inset-0 backdrop-blur-md bg-white/20"
+              onClick={handleCloseDeleteErrorModal}
+            ></div>
+            
+            <div 
+              className="relative bg-white rounded-lg p-8"
+              style={{
+                width: '408px',
+                height: '226px',
+                boxShadow: '0 35px 60px -12px rgba(239, 68, 68, 0.5), 0 0 0 1px rgba(239, 68, 68, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <button
+                onClick={handleCloseDeleteErrorModal}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="flex justify-center mb-6">
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  style={{
+                    backgroundColor: '#ef4444',
+                    boxShadow: '0 15px 35px -5px rgba(239, 68, 68, 0.6), 0 0 0 1px rgba(239, 68, 68, 0.2)'
+                  }}
+                >
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="text-center">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  Data tidak berhasil dihapus!
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {deleteErrorMessage || 'Terjadi kesalahan saat menghapus data'}
                 </p>
               </div>
             </div>
