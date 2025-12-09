@@ -4,38 +4,24 @@ import { User } from '@/generated/prisma';
 
 export class PrismaUserRepository implements UserRepository {
   async create(email: string, passwordHash: string, name?: string, username?: string): Promise<User> {
-    // Jika email kosong, set null (email optional)
-    const finalEmail = email && email.trim() !== '' ? email : null;
-    
-    // Generate username jika tidak ada
-    let finalUsername = username;
-    if (!finalUsername) {
-      if (finalEmail) {
-        finalUsername = finalEmail.split('@')[0];
-      } else {
-        // Jika tidak ada email dan username, generate random
-        finalUsername = `user_${Date.now()}`;
-      }
-    }
-    
-    return prisma.user.create({ 
-      data: { 
-        email: finalEmail, 
-        passwordHash, 
-        name, 
-        username: finalUsername 
-      } 
-    });
+    // Role-based system: tidak menggunakan email, username, name
+    // Method ini tetap ada untuk backward compatibility tapi tidak digunakan
+    throw new Error('Use role-based authentication. This method is deprecated.');
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    if (!email || email.trim() === '') return null;
-    return prisma.user.findUnique({ where: { email } });
+    // Deprecated: sistem sekarang menggunakan role
+    return null;
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    if (!username || username.trim() === '') return null;
-    return prisma.user.findUnique({ where: { username } });
+    // Deprecated: sistem sekarang menggunakan role
+    return null;
+  }
+
+  async findByRole(role: string): Promise<User | null> {
+    if (!role || role.trim() === '') return null;
+    return prisma.user.findUnique({ where: { role } });
   }
 
   async findById(id: number): Promise<User | null> {

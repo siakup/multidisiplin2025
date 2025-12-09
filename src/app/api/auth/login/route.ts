@@ -10,12 +10,14 @@ import { AuthContainer } from '@/lib/features/auth/AuthContainer';
  *       - Authentication
  *     summary: Login user
  *     description: |
- *       Login dengan email atau username dan password. Field 'email' bisa berisi email atau username.
+ *       Login dengan Role dan Password.
  *       Mengembalikan accessToken dan refreshToken yang harus disimpan untuk autentikasi endpoint lainnya.
  *       
- *       **Contoh username:** `{"email": "Facility management", "password": "1234"}`
+ *       **Role yang tersedia:**
+ *       - Facility management (Password: 1234)
+ *       - Student Housing (Password: 1234)
  *       
- *       **Contoh email:** `{"email": "user@example.com", "password": "123456"}`
+ *       **Contoh:** `{"role": "Facility management", "password": "1234"}`
  *     requestBody:
  *       required: true
  *       content:
@@ -23,16 +25,16 @@ import { AuthContainer } from '@/lib/features/auth/AuthContainer';
  *           schema:
  *             $ref: '#/components/schemas/LoginRequest'
  *           examples:
- *             withUsername:
- *               summary: Login dengan username
+ *             facilityManagement:
+ *               summary: Login sebagai Facility Management
  *               value:
- *                 email: "Facility management"
+ *                 role: "Facility management"
  *                 password: "1234"
- *             withEmail:
- *               summary: Login dengan email
+ *             studentHousing:
+ *               summary: Login sebagai Student Housing
  *               value:
- *                 email: "user@example.com"
- *                 password: "123456"
+ *                 role: "Student Housing"
+ *                 password: "1234"
  *     responses:
  *       200:
  *         description: Login berhasil
@@ -63,10 +65,10 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const { email, password } = parseLogin(body);
+    const { role, password } = parseLogin(body);
 
     const container = AuthContainer.getInstance();
-    const result = await container.loginUseCase.execute({ email, password });
+    const result = await container.loginUseCase.execute({ role, password });
 
     return NextResponse.json(result);
   } catch (err: any) {

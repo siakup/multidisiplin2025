@@ -14,19 +14,15 @@ export class LoginUseCase {
     private tokenService: TokenService
   ) {}
 
-  async execute({ email, password }: LoginRequest) {
-    // Coba cari user berdasarkan email dulu, jika tidak ada coba username
-    let user = await this.userRepo.findByEmail(email);
-    if (!user) {
-      // Jika tidak ditemukan via email, coba cari via username
-      user = await this.userRepo.findByUsername(email);
-    }
-    if (!user) throw new AppError('Invalid credentials', 401);
+  async execute({ role, password }: LoginRequest) {
+    // Cari user berdasarkan role
+    const user = await this.userRepo.findByRole(role);
+    if (!user) throw new AppError('Role atau password salah', 401);
 
     // Hash password input dan bandingkan dengan hash di database
     const passwordHash = (user as any).passwordHash ?? (user as any).password;
     const valid = this.hashService.compare(password, passwordHash);
-    if (!valid) throw new AppError('Invalid credentials', 401);
+    if (!valid) throw new AppError('Role atau password salah', 401);
 
     // access token
     const accessToken = this.tokenService.sign({ userId: user.id }, { expiresIn: '15m' });

@@ -7,7 +7,7 @@ import { api } from '@/lib/common/utils/api';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const [role, setRole] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -18,14 +18,14 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      if (!username || !password) {
-        throw new Error('Harap isi username dan password');
+      if (!role || !password) {
+        throw new Error('Harap isi role dan password');
       }
 
-      // Login dengan username atau email (backend akan handle kedua-duanya)
+      // Login dengan role dan password
       const response = await api.post<{ accessToken: string; refreshToken: string; user: any }>(
         '/auth/login',
-        { email: username, password } // Field 'email' bisa berisi email atau username
+        { role, password }
       );
 
       if (response.accessToken) {
@@ -39,7 +39,7 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Username atau password salah');
+      setError(err.message || 'Role atau password salah');
     } finally {
       setLoading(false);
     }
@@ -52,16 +52,16 @@ export default function LoginPage() {
           <div className="w-full max-w-md mx-auto">
             <div className="mb-8">
               <h1 className="text-3xl font-semibold text-[#12250F] mb-2 text-left">Selamat Datang!</h1>
-              <p className="text-gray-600 text-left">Silahkan masukkan username serta password anda.</p>
+              <p className="text-gray-600 text-left">Silahkan masukkan role dan password anda.</p>
             </div>
             <form onSubmit={onSubmit} className="space-y-5 w-full">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
                 <input
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="username"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  placeholder="Masukkan role"
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#12250F] focus:border-transparent transition-all"
                   required
                 />

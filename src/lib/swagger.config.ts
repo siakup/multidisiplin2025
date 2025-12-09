@@ -11,32 +11,68 @@ const options = {
 
 API ini menyediakan endpoints untuk mengelola tagihan listrik, panel, dan autentikasi user.
 
-## Autentikasi
+## Autentikasi Role-Based
 
-Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token). 
+Sistem menggunakan **Role-based Authentication**. User login menggunakan Role sebagai identifier dan Password untuk autentikasi.
 
 ### Cara Menggunakan:
 
-1. **Register/Login**: Gunakan endpoint \`/api/auth/register\` atau \`/api/auth/login\` untuk mendapatkan token
+1. **Login**: Gunakan endpoint \`/api/auth/login\` dengan Role dan Password
 2. **Simpan Token**: Simpan \`accessToken\` yang diterima dari response
 3. **Authorize**: Klik tombol **Authorize** di bagian atas dan masukkan: \`Bearer <your_access_token>\`
 4. **Gunakan API**: Setelah authorize, Anda dapat menggunakan endpoint yang memerlukan autentikasi
 
-### Credential Default:
+### Role yang Tersedia:
 
-- **Username**: \`Facility management\`
-- **Password**: \`1234\`
-- **Role**: Facility management (memiliki akses ke semua endpoint)
+1. **Facility Management**
+   - Role: \`Facility management\`
+   - Password: \`1234\`
+   - Akses: Full access ke semua endpoint
+
+2. **Student Housing**
+   - Role: \`Student Housing\`
+   - Password: \`1234\`
+   - Akses: Limited access
 
 ## Hak Akses
 
-- **Public**: Login, Register
-- **Authenticated**: Panel CRUD, Electricity Bills CRUD
-- **Facility Management Only**: List & Create Electricity Bills
+- **Public**: Login, View Panels
+- **Authenticated**: Create Panel (saat input tagihan), Electricity Bills Management
+- **Facility Management Only**: List, Create, Update & Delete Electricity Bills
+
+## Export & Import Data
+
+### Export (Client-Side)
+Export dilakukan melalui aplikasi web:
+1. Akses halaman \`/electricity-bills\`
+2. Klik tombol **Export Data**
+3. Data akan didownload sebagai file CSV
+
+Export menggunakan endpoint: \`GET /api/electricity-bills\` untuk mengambil data, lalu di-convert ke CSV di client.
+
+### Import (Client-Side)
+Import dilakukan melalui aplikasi web:
+1. Akses halaman \`/electricity-bills/import\`
+2. Download template CSV
+3. Isi data sesuai format
+4. Upload file CSV
+5. System akan memproses dan POST data menggunakan: \`POST /api/electricity-bills\`
+
+**Format CSV Import:**
+\`\`\`
+Nama Panel,Bulan (YYYY-MM),kWh,Jumlah Tagihan
+GL 01,2024-01,1500.50,2500000
+GL 02,2024-01,2000.00,3000000
+\`\`\`
+
+**Validasi:**
+- Satu panel hanya bisa memiliki satu data per bulan
+- Panel harus sudah ada di database atau akan dibuat otomatis
+- Format bulan: YYYY-MM
 
 ## Tips
 
-- Token akan expired setelah beberapa waktu. Gunakan \`/api/auth/refresh\` untuk mendapatkan token baru
+- Token akan expired setelah 15 menit. Gunakan \`/api/auth/refresh\` untuk mendapatkan token baru
 - Semua response error mengikuti format: \`{"error": "pesan error"}\`
 - Untuk filter di GET requests, semua parameter bersifat opsional
       `,
@@ -70,8 +106,12 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
             error: {
               type: 'string',
               description: 'Pesan error',
+              example: 'Invalid credentials',
             },
           },
+          example: {
+            error: 'Invalid credentials'
+          }
         },
         MessageResponse: {
           type: 'object',
@@ -79,26 +119,33 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
             message: {
               type: 'string',
               description: 'Pesan sukses',
+              example: 'Operation successful',
             },
           },
+          example: {
+            message: 'Electricity bill deleted successfully'
+          }
         },
         LoginRequest: {
           type: 'object',
-          required: ['email', 'password'],
+          required: ['role', 'password'],
           properties: {
-            email: {
+            role: {
               type: 'string',
-              format: 'email',
-              description: 'Email atau username user',
-              example: 'user@example.com',
+              description: 'Role user untuk login (case-sensitive)',
+              example: 'Facility management'
             },
             password: {
               type: 'string',
               format: 'password',
               description: 'Password user',
-              example: 'password123',
+              example: '1234',
             },
           },
+          example: {
+            role: 'Facility management',
+            password: '1234'
+          }
         },
         RegisterRequest: {
           type: 'object',
@@ -108,18 +155,18 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
               type: 'string',
               format: 'email',
               description: 'Email user (opsional jika username diisi)',
-              example: 'user@example.com',
+              example: 'newuser@example.com',
             },
             username: {
               type: 'string',
               description: 'Username user (opsional jika email diisi)',
-              example: 'username123',
+              example: 'newusername',
             },
             password: {
               type: 'string',
               format: 'password',
               description: 'Password user',
-              example: 'password123',
+              example: 'securepassword123',
             },
             name: {
               type: 'string',
@@ -127,6 +174,12 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
               example: 'John Doe',
             },
           },
+          example: {
+            username: 'newusername',
+            email: 'newuser@example.com',
+            password: 'securepassword123',
+            name: 'John Doe'
+          }
         },
         RefreshTokenRequest: {
           type: 'object',
@@ -135,9 +188,12 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
             refreshToken: {
               type: 'string',
               description: 'Refresh token untuk memperbarui access token',
-              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+              example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInR5cGUiOiJyZWZyZXNoIn0.abcdef123456',
             },
           },
+          example: {
+            refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInR5cGUiOiJyZWZyZXNoIn0.abcdef123456'
+          }
         },
         AuthResponse: {
           type: 'object',
@@ -235,9 +291,12 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
             namePanel: {
               type: 'string',
               description: 'Nama panel',
-              example: 'Panel A',
+              example: 'GL 01',
             },
           },
+          example: {
+            namePanel: 'GL 01'
+          }
         },
         UpdatePanelRequest: {
           type: 'object',
@@ -246,9 +305,12 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
             namePanel: {
               type: 'string',
               description: 'Nama panel baru',
-              example: 'Panel B',
+              example: 'GL 02',
             },
           },
+          example: {
+            namePanel: 'GL 02'
+          }
         },
         ElectricityBill: {
           type: 'object',
@@ -373,10 +435,19 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
             statusPay: {
               type: 'string',
               description: 'Status pembayaran',
-              example: 'Lunas',
+              example: 'Belum Lunas',
               enum: ['Lunas', 'Belum Lunas'],
             },
           },
+          example: {
+            panelId: 1,
+            userId: 1,
+            billingMonth: '2024-01-01',
+            kwhUse: 150.5,
+            vaStatus: 'Normal',
+            totalBills: 500000,
+            statusPay: 'Belum Lunas'
+          }
         },
         UpdateElectricityBillRequest: {
           type: 'object',
@@ -421,6 +492,13 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
               enum: ['Lunas', 'Belum Lunas'],
             },
           },
+          example: {
+            panelId: 2,
+            billingMonth: '2024-02-01',
+            kwhUse: 200.75,
+            totalBills: 650000,
+            statusPay: 'Lunas'
+          }
         },
         ImportResponse: {
           type: 'object',
@@ -446,6 +524,12 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
               example: ['Baris 3: Data tidak lengkap', 'Baris 5: Panel tidak ditemukan'],
             },
           },
+          example: {
+            message: 'Import berhasil',
+            successCount: 10,
+            errorCount: 2,
+            errors: ['Baris 3: Data tidak lengkap', 'Baris 5: Panel tidak ditemukan']
+          }
         },
       },
     },
@@ -456,7 +540,7 @@ Sebagian besar endpoint memerlukan autentikasi menggunakan JWT (JSON Web Token).
       },
       {
         name: 'Panel',
-        description: 'Endpoints untuk manajemen panel',
+        description: 'Endpoints untuk melihat dan menambah panel listrik. Panel yang sudah ditambahkan akan tersimpan permanen dan dapat digunakan untuk tagihan berikutnya.',
       },
       {
         name: 'Electricity Bills',

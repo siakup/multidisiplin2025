@@ -29,8 +29,8 @@ export async function logout() {
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('userRole');
       localStorage.removeItem('userUsername');
-      // Redirect to login page
-      window.location.href = '/login';
+      // Redirect to home page (landing page)
+      window.location.href = '/';
     }
   }
 }

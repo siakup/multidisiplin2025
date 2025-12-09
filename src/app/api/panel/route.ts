@@ -9,7 +9,10 @@ import { parseCreatePanel } from '@/lib/features/panel/presentation/dto/CreatePa
  *     tags:
  *       - Panel
  *     summary: List semua panel
- *     description: Mengambil daftar semua panel yang tersedia
+ *     description: |
+ *       Mengambil daftar semua panel yang tersedia di database.
+ *       
+ *       Endpoint ini digunakan untuk menampilkan dropdown panel saat input/edit tagihan listrik.
  *     responses:
  *       200:
  *         description: Daftar panel berhasil diambil
@@ -46,6 +49,12 @@ export async function GET(req: NextRequest) {
  *     summary: Buat panel baru
  *     description: |
  *       Membuat panel baru dengan nama panel.
+ *       
+ *       **Alur Penggunaan:**
+ *       - User menambah panel baru saat input tagihan listrik
+ *       - Panel akan tersimpan permanen di database
+ *       - Panel yang sudah tersimpan dapat dipilih untuk tagihan berikutnya
+ *       - Panel TIDAK dapat diedit atau dihapus setelah dibuat
  *       
  *       **Catatan:** Panel yang dibuat akan tersimpan dengan timestamp createdAt dan updatedAt.
  *     security:

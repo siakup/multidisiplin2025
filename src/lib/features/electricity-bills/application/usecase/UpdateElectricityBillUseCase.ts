@@ -28,6 +28,38 @@ export class UpdateElectricityBillUseCase {
       }
     }
 
+    // Validate unique constraint: 1 panel = 1 data per month
+    // Only check if panelId or billingMonth is being updated
+    if (data.panelId !== undefined || data.billingMonth !== undefined) {
+      const checkPanelId = data.panelId ?? existingBill.panelId;
+      const checkBillingMonth = data.billingMonth ?? existingBill.billingMonth;
+
+      const billingDate = new Date(checkBillingMonth);
+      const startOfMonth = new Date(billingDate.getFullYear(), billingDate.getMonth(), 1);
+      const endOfMonth = new Date(billingDate.getFullYear(), billingDate.getMonth() + 1, 0, 23, 59, 59, 999);
+
+      const duplicateBill = await prisma.electricityBill.findFirst({
+        where: {
+          id: { not: id }, // Exclude current bill
+          panelId: checkPanelId,
+          billingMonth: {
+            gte: startOfMonth,
+            lte: endOfMonth,
+          },
+        },
+        include: {
+          panel: true,
+        },
+      });
+
+      if (duplicateBill) {
+        throw new AppError(
+          `Data untuk panel ${duplicateBill.panel.namePanel} pada bulan ${billingDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })} sudah ada. Satu panel hanya bisa memiliki satu data per bulan.`,
+          400
+        );
+      }
+    }
+
     return this.billRepo.update(id, data);
   }
 }

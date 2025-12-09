@@ -1,26 +1,15 @@
--- ============================================
--- Database Schema for Electricity Bills System
--- ============================================
--- This file contains the DDL and initial data
--- Run this script in pgAdmin or psql
--- ============================================
-
--- Drop existing tables if they exist (in correct order due to foreign keys)
+DROP TABLE IF EXISTS "DormRecord" CASCADE;
+DROP TABLE IF EXISTS "Dorm" CASCADE;
 DROP TABLE IF EXISTS "Session" CASCADE;
 DROP TABLE IF EXISTS "Electricity_Bills" CASCADE;
 DROP TABLE IF EXISTS "Panel" CASCADE;
 DROP TABLE IF EXISTS "User" CASCADE;
 
--- ============================================
--- Enable Extension: pgcrypto
--- ============================================
--- Extension ini diperlukan untuk function digest() (SHA-256)
+DROP TYPE IF EXISTS "PanelCategory" CASCADE;
+DROP TYPE IF EXISTS "Gender" CASCADE;
+
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- ============================================
--- Create Function: SHA-256 Hash
--- ============================================
--- Function untuk menghash password menggunakan SHA-256
 CREATE OR REPLACE FUNCTION sha256_hash(input_text TEXT)
 RETURNS TEXT AS $$
 BEGIN
@@ -28,33 +17,25 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- ============================================
--- Create Table: User
--- ============================================
+CREATE TYPE "PanelCategory" AS ENUM ('FACILITY_MANAGEMENT', 'STUDENT_HOUSING');
+CREATE TYPE "Gender" AS ENUM ('PUTRA', 'PUTRI', 'CAMPUR');
+
 CREATE TABLE "User" (
     "id_User" SERIAL PRIMARY KEY,
-    "Username" VARCHAR(255) UNIQUE,
-    "Password" VARCHAR(255) NOT NULL,
-    "email" VARCHAR(255) UNIQUE,
-    "name" VARCHAR(255),
-    "Role" VARCHAR(50) NOT NULL DEFAULT 'USER',
+    "Role" VARCHAR(50) NOT NULL UNIQUE,  
+    "Password" VARCHAR(255) NOT NULL,  
     "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- Create Table: Panel
--- ============================================
 CREATE TABLE "Panel" (
     "id_Panel" SERIAL PRIMARY KEY,
     "Name_Panel" VARCHAR(255) NOT NULL,
+    "category" "PanelCategory" NOT NULL DEFAULT 'FACILITY_MANAGEMENT',
     "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- Create Table: Electricity_Bills
--- ============================================
 CREATE TABLE "Electricity_Bills" (
     "id_Bills" SERIAL PRIMARY KEY,
     "id_Panel" INTEGER NOT NULL,
@@ -68,10 +49,6 @@ CREATE TABLE "Electricity_Bills" (
     CONSTRAINT "fk_panel" FOREIGN KEY ("id_Panel") REFERENCES "Panel"("id_Panel") ON DELETE CASCADE,
     CONSTRAINT "fk_user" FOREIGN KEY ("id_User") REFERENCES "User"("id_User") ON DELETE CASCADE
 );
-
--- ============================================
--- Create Table: Session
--- ============================================
 CREATE TABLE "Session" (
     "id" TEXT PRIMARY KEY,
     "userId" INTEGER NOT NULL,
@@ -81,39 +58,48 @@ CREATE TABLE "Session" (
     CONSTRAINT "fk_session_user" FOREIGN KEY ("userId") REFERENCES "User"("id_User") ON DELETE CASCADE
 );
 
--- ============================================
--- Create Indexes for Performance
--- ============================================
 CREATE INDEX "idx_electricity_bills_panel" ON "Electricity_Bills"("id_Panel");
 CREATE INDEX "idx_electricity_bills_user" ON "Electricity_Bills"("id_User");
 CREATE INDEX "idx_electricity_bills_billing_month" ON "Electricity_Bills"("Billing_month");
 CREATE INDEX "idx_session_user" ON "Session"("userId");
 CREATE INDEX "idx_session_refresh_token" ON "Session"("refreshToken");
 
--- ============================================
--- Insert Initial Users
--- ============================================
--- Password akan di-hash otomatis menggunakan function sha256_hash()
--- Password asli: 1234
--- Username: Facility management
-INSERT INTO "User" ("Username", "Password", "Role", "name") 
-VALUES ('Facility management', sha256_hash('1234'), 'USER', 'Facility Management');
+INSERT INTO "User" ("Role", "Password") 
+VALUES ('Facility Management', sha256_hash('1234'));
 
--- Username: student hausing
-INSERT INTO "User" ("Username", "Password", "Role", "name") 
-VALUES ('student hausing', sha256_hash('1234'), 'USER', 'Student Housing');
+INSERT INTO "User" ("Role", "Password") 
+VALUES ('Student Housing', sha256_hash('1234'));
 
--- ============================================
--- Insert Initial Panels
--- ============================================
-INSERT INTO "Panel" ("Name_Panel") VALUES ('GL 01');
-INSERT INTO "Panel" ("Name_Panel") VALUES ('GL 02');
-INSERT INTO "Panel" ("Name_Panel") VALUES ('GOR 01');
-INSERT INTO "Panel" ("Name_Panel") VALUES ('GOR 02');
-INSERT INTO "Panel" ("Name_Panel") VALUES ('Modular 01');
+INSERT INTO "Panel" ("Name_Panel", "category") VALUES ('GL 01', 'FACILITY_MANAGEMENT');
+INSERT INTO "Panel" ("Name_Panel", "category") VALUES ('GL 02', 'FACILITY_MANAGEMENT');
+INSERT INTO "Panel" ("Name_Panel", "category") VALUES ('GOR 01', 'FACILITY_MANAGEMENT');
+INSERT INTO "Panel" ("Name_Panel", "category") VALUES ('GOR 02', 'FACILITY_MANAGEMENT');
+INSERT INTO "Panel" ("Name_Panel", "category") VALUES ('Modular 01', 'FACILITY_MANAGEMENT');
 
--- ============================================
--- Verify Data
--- ============================================
+CREATE TABLE "Dorm" (
+    "id" TEXT PRIMARY KEY,
+    "name" VARCHAR(255) NOT NULL UNIQUE,
+    "gender" "Gender" NOT NULL,
+    "powerCapacity" INTEGER NOT NULL,
+    "capacity" INTEGER,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "DormRecord" (
+    "id" TEXT PRIMARY KEY,
+    "period" TIMESTAMP NOT NULL,
+    "dormName" VARCHAR(255) NOT NULL,
+    "totalKwh" DOUBLE PRECISION NOT NULL,
+    "billAmount" DOUBLE PRECISION NOT NULL,
+    "createdBy" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "fk_dormrecord_user" FOREIGN KEY ("createdBy") REFERENCES "User"("id_User") ON DELETE CASCADE
+);
+
+CREATE INDEX "idx_dormrecord_user" ON "DormRecord"("createdBy");
+CREATE INDEX "idx_dormrecord_period" ON "DormRecord"("period");
+
 SELECT * FROM "User";
 SELECT * FROM "Panel";

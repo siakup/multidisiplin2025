@@ -12,6 +12,7 @@ export class PrismaSessionRepository implements SessionRepository {
   }
 
   async revokeByToken(refreshToken: string): Promise<void> {
-    await prisma.session.delete({ where: { refreshToken } });
+    // Use deleteMany to avoid error if session doesn't exist
+    await prisma.session.deleteMany({ where: { refreshToken } });
   }
 }

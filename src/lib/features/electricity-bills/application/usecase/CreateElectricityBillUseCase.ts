@@ -26,6 +26,29 @@ export class CreateElectricityBillUseCase {
       throw new AppError('User not found', 404);
     }
 
+    // Validate unique constraint: 1 panel = 1 data per month
+    // Check if data already exists for this panel in this month
+    const billingDate = new Date(data.billingMonth);
+    const startOfMonth = new Date(billingDate.getFullYear(), billingDate.getMonth(), 1);
+    const endOfMonth = new Date(billingDate.getFullYear(), billingDate.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    const existingBill = await prisma.electricityBill.findFirst({
+      where: {
+        panelId: data.panelId,
+        billingMonth: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    });
+
+    if (existingBill) {
+      throw new AppError(
+        `Data untuk panel ${panel.namePanel} pada bulan ${billingDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })} sudah ditambahkan. Satu panel hanya bisa memiliki satu data per bulan.`,
+        400
+      );
+    }
+
     const bill = await this.billRepo.create(data);
     return bill;
   }

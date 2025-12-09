@@ -53,7 +53,6 @@ export async function requireApiAuth(
       select: {
         id: true,
         role: true,
-        username: true,
       },
     });
 
@@ -61,14 +60,22 @@ export async function requireApiAuth(
       return { response: unauthorized() };
     }
 
+    // Check jika role user sesuai dengan allowedRoles atau allowedUsernames
+    // allowedUsernames sekarang digunakan untuk check role juga (backward compatibility)
     const roleAllowed = isRoleAllowed(user.role, options.allowedRoles);
-    const usernameAllowed = isUsernameAllowed(user.username, options.allowedUsernames);
+    const usernameAllowed = isUsernameAllowed(user.role, options.allowedUsernames);
 
     if (!roleAllowed && !usernameAllowed) {
       return { response: forbidden() };
     }
 
-    return { user };
+    return { 
+      user: {
+        id: user.id,
+        role: user.role,
+        username: user.role, // Gunakan role sebagai username untuk backward compatibility
+      }
+    };
   } catch (error) {
     logger.error('Auth verification failed:', error as Error);
     return { response: unauthorized() };

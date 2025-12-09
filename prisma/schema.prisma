@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -16,14 +10,12 @@ datasource db {
 
 model User {
   id           Int      @id @default(autoincrement()) @map("id_User")
-  username     String?  @unique @map("Username")
-  passwordHash String   @map("Password")
-  email        String?  @unique
-  name         String?
-  role         String   @default("USER") @map("Role")
+  role         String   @unique @map("Role")  // Role sebagai identifier (login field)
+  passwordHash String   @map("Password")      // Password yang di-hash
 
   sessions        Session[]         @relation("UserSessions")
   electricityBills ElectricityBill[] @relation("UserBills")
+  dormRecords     DormRecord[]      @relation("UserDormRecords")
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
@@ -40,8 +32,9 @@ model Session {
 }
 
 model Panel {
-  id        Int      @id @default(autoincrement()) @map("id_Panel")
-  namePanel String   @map("Name_Panel")
+  id        Int           @id @default(autoincrement()) @map("id_Panel")
+  namePanel String        @unique @map("Name_Panel")
+  category  PanelCategory @default(FACILITY_MANAGEMENT)
 
   electricityBills ElectricityBill[] @relation("PanelBills")
   createdAt        DateTime         @default(now())
@@ -65,7 +58,45 @@ model ElectricityBill {
   user  User  @relation("UserBills", fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Electricity_Bills")
+  @@unique([panelId, billingMonth], name: "unique_panel_month")
   @@index([panelId])
   @@index([userId])
   @@index([billingMonth])
+}
+
+model DormRecord {
+  id         String   @id @default(cuid())
+  period     DateTime
+  dormName   String
+  totalKwh   Float
+  billAmount Float
+  createdBy  Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation("UserDormRecords", fields: [createdBy], references: [id])
+  
+  @@map("DormRecord")
+}
+
+model Dorm {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  gender        Gender
+  powerCapacity Int
+  capacity      Int?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+
+enum Gender {
+  PUTRA
+  PUTRI
+  CAMPUR
+}
+
+enum PanelCategory {
+  FACILITY_MANAGEMENT
+  STUDENT_HOUSING
 }
