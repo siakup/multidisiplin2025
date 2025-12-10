@@ -115,9 +115,7 @@ export default function ElectricityBillsInputPage() {
         throw new Error('Tagihan listrik harus berupa angka yang valid');
       }
 
-      // Get current user ID (dari localStorage atau context)
-      // For now, using userId 1 as default
-      const userId = 1; // TODO: Get from auth context
+      const userId = 1; 
 
       // Submit data ke API
       const billingMonth = new Date(formData.bulan + '-01');
@@ -420,10 +418,21 @@ export default function ElectricityBillsInputPage() {
               </label>
               <div className="flex-1">
                 <input
-                  type="text"
+                  type="number"
+                  min="0"
                   name="jumlahKwh"
                   value={formData.jumlahKwh}
-                  onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E' || e.key === '.' || e.key === '=') {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || Number(value) >= 0) {
+                      setFormData(prev => ({ ...prev, jumlahKwh: value }));
+                    }
+                  }}
                   placeholder="Ketik disini !"
                   className="border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
                   style={{
@@ -449,10 +458,21 @@ export default function ElectricityBillsInputPage() {
               </label>
               <div className="flex-1">
                 <input
-                  type="text"
+                  type="number"
+                  min="0"
                   name="tagihanListrik"
                   value={formData.tagihanListrik}
-                  onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E' || e.key === '.' || e.key === '=') {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || Number(value) >= 0) {
+                      setFormData(prev => ({ ...prev, tagihanListrik: value }));
+                    }
+                  }}
                   placeholder="Ketik disini !"
                   className="border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
                   style={{

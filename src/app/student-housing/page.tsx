@@ -191,7 +191,7 @@ export default function StudentHousingPage() {
                     className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
                     style={{ width: '200px' }}
                   >
-                    Tagihan Listrik (Rp/Bulan)
+                    Jumlah Tagihan
                   </th>
                   <th
                     className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"

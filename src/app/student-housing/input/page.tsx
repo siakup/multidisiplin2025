@@ -77,6 +77,12 @@ export default function StudentHousingInputPage() {
     setErrorMessage('');
 
     try {
+      // Check if user is authenticated
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      if (!token) {
+        throw new Error('Sesi Anda telah berakhir. Silakan login kembali.');
+      }
+
       // Validasi field kosong
       if (!formData.dormName || !formData.period || !formData.totalKwh || !formData.billAmount) {
         throw new Error('Silahkan isi semua field yang kosong');
@@ -113,7 +119,18 @@ export default function StudentHousingInputPage() {
       setShowSuccessModal(true);
     } catch (err: any) {
       console.error('Submit error:', err);
-      setErrorMessage(err.message || 'Gagal menyimpan data');
+      const errorMsg = err.message || 'Gagal menyimpan data';
+      
+      // If unauthorized, redirect to login
+      if (errorMsg.toLowerCase().includes('unauthorized') || errorMsg.includes('sesi')) {
+        setErrorMessage('Sesi Anda telah berakhir. Silakan login kembali.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        setErrorMessage(errorMsg);
+      }
+      
       setShowErrorModal(true);
     } finally {
       setLoading(false);
@@ -232,81 +249,73 @@ export default function StudentHousingInputPage() {
         </div>
 
         {/* Page Title */}
-        <h1 className="font-bold text-black text-center mb-12" style={{fontSize: '48px'}}>
-          Masukkan Data Konsumsi Listrik Asrama
-        </h1>
+        <div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black text-center">
+            Pendataan Asrama Mahasiswa
+          </h1>
+        </div>
 
         {/* Form */}
-        <div className="bg-white mx-auto flex justify-center">
-          <form onSubmit={handleSubmit} style={{gap: '30px', display: 'flex', flexDirection: 'column'}}>
-            {/* Nama Asrama */}
-            <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
-                Nama Asrama :
+        <div className="mt-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Periode */}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <label className="w-full md:w-80 text-black font-semibold text-xl">
+                Periode
               </label>
-              <div className="relative flex-1">
+              <div className="relative flex-1 w-full">
+                <input
+                  type="month"
+                  name="period"
+                  value={formData.period}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-md p-2 pl-3 pr-10 bg-white text-gray-700 placeholder-gray-400 focus:ring-3 focus:ring-green-300"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Nama Asrama */}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <label className="w-full md:w-80 text-black font-semibold text-xl">
+                Nama Asrama
+              </label>
+              <div className="relative flex-1 w-full">
                 <div
-                  className="border rounded-lg bg-white cursor-pointer"
-                  style={{
-                    width: '648px',
-                    height: '45px',
-                    borderColor: '#646F61',
-                    color: formData.dormName ? 'black' : '#9ca3af',
-                    fontSize: '16px',
-                    padding: '0 16px',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}
+                  className="w-full border border-gray-300 rounded-md p-2 bg-white text-gray-700 cursor-pointer flex items-center justify-between"
                   onClick={() => setShowDormDropdown(!showDormDropdown)}
+                  style={{ color: formData.dormName ? 'black' : '#9ca3af' }}
                 >
-                  {dormsLoading ? 'Memuat asrama...' : (formData.dormName || 'Pilih nama asrama')}
+                  {dormsLoading ? 'Memuat asrama...' : (formData.dormName || 'Pilih Nama Asrama')}
+                  <svg
+                    className="w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
-                <svg
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
                 
                 {/* Custom Dropdown */}
                 {showDormDropdown && (
-                  <div 
-                    className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto"
-                    style={{ borderColor: '#646F61' }}
-                  >
+                  <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-60 overflow-y-auto mt-1">
                     {dormOptions.map((dorm) => (
                       <div
                         key={dorm.id}
-                        className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                        style={{
-                          backgroundColor: 'white',
-                          color: 'black',
-                          fontSize: '16px'
-                        }}
-                        onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = '#D0E7BD'; }}
-                        onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = 'white'; }}
+                        className="px-4 py-2 cursor-pointer hover:bg-green-100 transition-colors text-gray-700"
                         onClick={() => handleSelectDorm(dorm)}
                       >
                         {dorm.name}
                       </div>
                     ))}
                     <div
-                      className="px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors border-t"
-                      style={{
-                        backgroundColor: 'white',
-                        color: 'black',
-                        fontSize: '16px',
-                        borderTopColor: '#e5e7eb'
-                      }}
-                      onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = '#D0E7BD'; }}
-                      onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = 'white'; }}
+                      className="px-4 py-2 cursor-pointer hover:bg-green-100 transition-colors border-t border-gray-300 text-gray-700"
                       onClick={handleAddNewDormClick}
                     >
                       + Tambahkan Nama Asrama
@@ -318,45 +327,31 @@ export default function StudentHousingInputPage() {
 
             {/* Tambah Asrama Baru */}
             {showAddDorm && (
-              <div className="flex flex-col gap-6 p-6 bg-gray-50 border rounded-lg" style={{ borderColor: '#646F61', marginLeft: '220px', width: '648px' }}>
-                
-                {/* Nama Asrama Baru */}
-                <div className="flex items-center gap-4">
-                  <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '16px', width: '150px'}}>
-                    Nama Asrama Baru :
+              <div className="flex flex-col gap-4 p-4 bg-gray-50 border rounded-md animate-fadeIn">
+
+                {/* Nama Asrama */}
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <label className="w-full md:w-80 text-black font-semibold text-xl">
+                    Nama Asrama Baru
                   </label>
                   <input
                     type="text"
                     value={newDorm}
                     onChange={(e) => setNewDorm(e.target.value)}
                     placeholder="Contoh: Asrama Baru"
-                    className="flex-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
-                    style={{
-                      height: '40px',
-                      borderColor: '#646F61',
-                      color: 'black',
-                      fontSize: '14px',
-                      padding: '0 12px'
-                    }}
+                    className="flex-1 border border-gray-300 rounded-md p-2 bg-white text-gray-700 focus:ring-2 focus:ring-green-300"
                   />
                 </div>
 
                 {/* Gender */}
-                <div className="flex items-center gap-4">
-                  <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '16px', width: '150px'}}>
-                    Gender Asrama :
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <label className="w-full md:w-80 text-black font-semibold text-xl">
+                    Gender Asrama
                   </label>
                   <select
                     value={newGender}
                     onChange={(e) => setNewGender(e.target.value)}
-                    className="flex-1 border rounded-lg bg-white focus:ring-2 focus:ring-blue-500 transition duration-200"
-                    style={{
-                      height: '40px',
-                      borderColor: '#646F61',
-                      color: 'black',
-                      fontSize: '14px',
-                      padding: '0 12px'
-                    }}
+                    className="flex-1 border border-gray-300 bg-white rounded-md p-2 text-gray-600 focus:ring-2 focus:ring-green-300"
                   >
                     <option value="PUTRA">PUTRA</option>
                     <option value="PUTRI">PUTRI</option>
@@ -365,66 +360,52 @@ export default function StudentHousingInputPage() {
                 </div>
 
                 {/* Kapasitas */}
-                <div className="flex items-center gap-4">
-                  <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '16px', width: '150px'}}>
-                    Kapasitas Penghuni :
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <label className="w-full md:w-80 text-black font-semibold text-xl">
+                    Kapasitas Penghuni
                   </label>
                   <input
                     type="number"
                     min="0"
                     value={newCapacity}
                     onKeyDown={(e) => {
-                      if (e.key === '-' || e.key === 'e') {
+                      if (e.key === "-" || e.key === "e") {
                         e.preventDefault();
                       }
                     }}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value === '' || Number(value) >= 0) {
+                      if (value === "" || Number(value) >= 0) {
                         setNewCapacity(value);
                       }
                     }}
                     placeholder="Contoh: 24"
-                    className="flex-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
-                    style={{
-                      height: '40px',
-                      borderColor: '#646F61',
-                      color: 'black',
-                      fontSize: '14px',
-                      padding: '0 12px'
-                    }}
+                    className="flex-1 border border-gray-300 rounded-md p-2 bg-white text-gray-700 focus:ring-2 focus:ring-green-300"
                   />
                 </div>
 
                 {/* Power Capacity */}
-                <div className="flex items-center gap-4">
-                  <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '16px', width: '150px'}}>
-                    Daya Listrik (VA) :
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <label className="w-full md:w-80 text-black font-semibold text-xl">
+                    Daya Listrik (VA)
                   </label>
                   <input
                     type="number"
                     min="0"
                     value={newPower}
                     onKeyDown={(e) => {
-                      if (e.key === '-' || e.key === 'e') {
+                      if (e.key === "-" || e.key === "e") {
                         e.preventDefault();
                       }
                     }}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value === '' || Number(value) >= 0) {
+                      if (value === "" || Number(value) >= 0) {
                         setNewPower(value);
                       }
                     }}
                     placeholder="Contoh: 2200"
-                    className="flex-1 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
-                    style={{
-                      height: '40px',
-                      borderColor: '#646F61',
-                      color: 'black',
-                      fontSize: '14px',
-                      padding: '0 12px'
-                    }}
+                    className="flex-1 border border-gray-300 rounded-md p-2 bg-white text-gray-700 focus:ring-2 focus:ring-green-300"
                   />
                 </div>
 
@@ -439,133 +420,97 @@ export default function StudentHousingInputPage() {
                       setNewCapacity('');
                       setNewPower('');
                     }}
-                    className="px-6 py-2 rounded-lg font-medium transition-colors duration-200 border"
-                    style={{
-                      backgroundColor: '#fff',
-                      borderColor: '#d1d5db',
-                      color: '#374151',
-                      fontSize: '14px',
-                    }}
+                    className="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400 transition"
                   >
                     Batal
                   </button>
+
                   <button
                     type="button"
                     onClick={handleAddDorm}
-                    className="px-6 py-2 rounded-lg font-medium text-white transition-colors duration-200"
-                    style={{
-                      backgroundColor: '#5EA127',
-                      fontSize: '14px',
-                    }}
+                    className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition"
                   >
                     Simpan
                   </button>
                 </div>
+
               </div>
             )}
 
-            {/* Bulan */}
-            <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
-                Bulan :
+            {/* Total Konsumsi Listrik */}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <label className="w-full md:w-80 text-black font-semibold text-xl">
+                Total Konsumsi Listrik (kWh)
               </label>
-              <div className="relative flex-1">
+              <div className="flex-1 relative w-full">
                 <input
-                  type="month"
-                  name="period"
-                  value={formData.period}
-                  onChange={handleInputChange}
-                  className="border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
-                  style={{
-                    width: '648px',
-                    height: '45px',
-                    borderColor: '#646F61',
-                    color: 'black',
-                    fontSize: '16px',
-                    padding: '0 16px'
-                  }}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Jumlah kWh */}
-            <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
-                Jumlah kWh :
-              </label>
-              <div className="flex-1">
-                <input
-                  type="text"
+                  type="number"
+                  min="0"
                   name="totalKwh"
+                  placeholder="Masukkan Jumlah kWh"
                   value={formData.totalKwh}
-                  onChange={handleInputChange}
-                  placeholder="Ketik disini !"
-                  className="border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
-                  style={{
-                    width: '648px',
-                    height: '45px',
-                    borderColor: '#646F61',
-                    color: 'black',
-                    fontSize: '16px',
-                    padding: '0 16px'
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === "e") {
+                      e.preventDefault();
+                    }
                   }}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || Number(value) >= 0) {
+                      setFormData(prev => ({ ...prev, totalKwh: value }));
+                    }
+                  }}
+                  className="w-full border left-2 border-gray-300 rounded-md p-2 bg-white text-gray-700 focus:ring-3 focus:ring-green-300"
                   required
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Hanya angka saja. Contoh: 4000
-                </p>
               </div>
             </div>
 
-            {/* Jumlah Tagihan */}
-            <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
-                Jumlah Tagihan :
+            {/* Tagihan Listrik */}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <label className="w-full md:w-80 text-black font-semibold text-xl">
+                Tagihan Listrik (Rp/Bulan)
               </label>
-              <div className="flex-1">
+              <div className="flex-1 relative w-full">
+                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600">
+                  Rp.
+                </span>
                 <input
                   type="text"
+                  inputMode="numeric"
                   name="billAmount"
-                  value={formData.billAmount}
-                  onChange={handleInputChange}
-                  placeholder="Ketik disini !"
-                  className="border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 bg-white"
-                  style={{
-                    width: '648px',
-                    height: '45px',
-                    borderColor: '#646F61',
-                    color: 'black',
-                    fontSize: '16px',
-                    padding: '0 16px'
+                  placeholder="Masukkan jumlah tagihan"
+                  value={
+                    formData.billAmount === ""
+                      ? ""
+                      : new Intl.NumberFormat("id-ID").format(Number(formData.billAmount))
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "-" || e.key === "e") {
+                      e.preventDefault();
+                    }
                   }}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/\D/g, "");
+                    setFormData(prev => ({ ...prev, billAmount: rawValue }));
+                  }}
+                  className="w-full border border-gray-300 rounded-md p-2 pl-10 bg-white text-gray-700 focus:ring-3 focus:ring-green-300"
                   required
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Hanya angka saja. Contoh: 800000
-                </p>
               </div>
             </div>
 
-
-            {/* Submit Button */}
-            <div className="flex justify-center" style={{marginTop: '91px'}}>
+            {/* Tombol Simpan */}
+            <div className="pt-6 flex justify-center">
               <button
                 type="submit"
                 disabled={loading}
-                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60"
-                style={{
-                  backgroundColor: '#172813',
-                  width: '500px',
-                  height: '45px',
-                  fontSize: '20px'
-                }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
+                className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 bg-black hover:bg-green-800 text-white font-semibold py-3 px-6 rounded-md transition duration-200 text-sm sm:text-base disabled:opacity-60"
               >
                 {loading ? 'Menyimpan...' : 'Simpan Data'}
               </button>
             </div>
+
           </form>
         </div>
 
