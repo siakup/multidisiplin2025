@@ -47,12 +47,12 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-white w-full overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-2 h-screen">
-        <section className="flex flex-col justify-center items-center h-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
+        <section className="flex flex-col justify-center items-center h-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 bg-white py-10 sm:py-16">
           <div className="w-full max-w-md mx-auto">
             <div className="mb-8">
-              <h1 className="text-3xl font-semibold text-[#12250F] mb-2 text-left">Selamat Datang!</h1>
-              <p className="text-gray-600 text-left">Silahkan masukkan role dan password anda.</p>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-[#12250F] mb-2 text-left">Selamat Datang!</h1>
+              <p className="text-gray-600 text-left text-sm sm:text-base">Silahkan masukkan role dan password anda.</p>
             </div>
             <form onSubmit={onSubmit} className="space-y-5 w-full">
               <div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-[#12250F] py-2.5 text-white hover:bg-[#1a2f15] disabled:opacity-60 disabled:cursor-not-allowed transition-colors font-medium"
+                className="w-full rounded-lg bg-[#12250F] py-2.5 text-white hover:bg-[#1a2f15] disabled:opacity-60 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
               >
                 {loading ? 'Memproses...' : 'Masuk'}
               </button>
@@ -116,9 +116,8 @@ export default function LoginPage() {
         </section>
 
         <section 
-          className="hidden lg:block relative h-full w-full overflow-hidden bg-white p-0" 
+          className="hidden lg:block relative h-full w-full overflow-hidden bg-white p-0 border-l border-gray-200"
           style={{
-            borderLeft: '1px solid #e5e7eb',
             borderTopLeftRadius: '45px',
             borderBottomLeftRadius: '45px'
           }}

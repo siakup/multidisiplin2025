@@ -211,197 +211,163 @@ export default function ElectricityBillsPage() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Page Title */}
-        <h1 className="font-bold text-black text-center mb-8" style={{fontSize: '48pt'}}>
+        <h1 className="font-bold text-black text-center mb-8 text-3xl sm:text-4xl md:text-5xl">
           Data Tagihan Listrik
         </h1>
 
         {/* Action Buttons */}
-        <div className="flex justify-center items-center mb-4">
-          {/* Left side buttons */}
-          <div className="flex" style={{gap: '17px'}}>
-            <button 
-              className="text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200" 
-              style={{backgroundColor: '#172813', fontSize: '20px'}} 
-              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }} 
-              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <button
+              className="text-white px-5 py-3 rounded-lg font-medium transition-colors duration-200 bg-[#172813] text-base sm:text-lg"
               onClick={handleExportData}
             >
               Export Data
             </button>
             <Link
               href="/electricity-bills/import"
-              className="text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-              style={{backgroundColor: '#172813', fontSize: '20px'}}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
+              className="text-white px-5 py-3 rounded-lg font-medium transition-colors duration-200 bg-[#172813] text-base sm:text-lg text-center"
             >
               Import Data
             </Link>
           </div>
 
-          {/* Spacer */}
-          <div style={{width: '532px'}}></div>
-
-          {/* Right side button */}
-          <div>
-            <Link
-              href="/electricity-bills/input"
-              className="inline-flex items-center space-x-2 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-              style={{backgroundColor: '#5EA127', fontSize: '20px'}}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#6bb52d'; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#5EA127'; }}
+          <Link
+            href="/electricity-bills/input"
+            className="inline-flex items-center justify-center space-x-2 text-white px-5 py-3 rounded-lg font-medium transition-colors duration-200 bg-[#5EA127] text-base sm:text-lg"
+          >
+            <span>Tambah Data</span>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <span>Tambah Data</span>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-                />
-              </svg>
-            </Link>
-          </div>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </Link>
         </div>
 
         {/* Data Table */}
-        <div className="flex justify-center" style={{marginTop: '39px'}}>
-          <div className="bg-white rounded-lg overflow-hidden" style={{
-            width: 'calc(170px + 17px + 170px + 532px + 210px)',
-            border: '1px solid #345915'
-          }}>
-            <table className="w-full" style={{borderCollapse: 'collapse'}}>
-            {/* Table Header */}
-            <thead style={{backgroundColor: '#93C06E'}}>
-              <tr>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  No.
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Nama Panel
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Bulan
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  kWh
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Jumlah Tagihan
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Action
-                </th>
-              </tr>
-            </thead>
-            
-            {/* Table Body */}
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-6 text-center text-gray-500" style={{fontSize: '20px'}}>
-                    Memuat data...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-6 text-center text-red-500" style={{fontSize: '20px'}}>
-                    {error}
-                  </td>
-                </tr>
-              ) : bills.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-6 text-center text-gray-500" style={{fontSize: '20px'}}>
-                    Belum ada data
-                  </td>
-                </tr>
-              ) : (
-                bills.map((bill, index) => (
-                  <tr key={bill.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {bill.panel?.namePanel || '-'}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {formatDate(bill.billingMonth)}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {typeof bill.kwhUse === 'string' ? parseFloat(bill.kwhUse) : Number(bill.kwhUse)}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {formatCurrency(typeof bill.totalBills === 'string' ? parseFloat(bill.totalBills) : Number(bill.totalBills))}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center" style={{borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      <div className="flex justify-center gap-2">
-                        <button
-                          className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
-                          style={{
-                            backgroundColor: '#F59E0B',
-                            width: '32px',
-                            height: '32px',
-                            padding: '0'
-                          }}
-                          onClick={() => handleEdit(bill)}
-                          title="Edit"
-                        >
-                          <svg
-                            className="w-5 h-5 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
-                          style={{
-                            backgroundColor: '#EF4444',
-                            width: '32px',
-                            height: '32px',
-                            padding: '0'
-                          }}
-                          onClick={() => handleDeleteClick(bill)}
-                          title="Delete"
-                        >
-                          <svg
-                            className="w-5 h-5 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
+        <div className="mt-8">
+          <div className="bg-white rounded-xl border border-[#345915]/60 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px]">
+                {/* Table Header */}
+                <thead className="bg-[#93C06E] text-gray-900 text-sm sm:text-base">
+                  <tr>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold border-b border-r border-[#345915]">
+                      No.
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold border-b border-r border-[#345915]">
+                      Nama Panel
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold border-b border-r border-[#345915]">
+                      Bulan
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold border-b border-r border-[#345915]">
+                      kWh
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold border-b border-r border-[#345915]">
+                      Jumlah Tagihan
+                    </th>
+                    <th className="px-4 sm:px-6 py-3 sm:py-4 text-center font-semibold border-b border-[#345915]">
+                      Action
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                
+                {/* Table Body */}
+                <tbody className="text-sm sm:text-base">
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-6 text-center text-gray-500">
+                        Memuat data...
+                      </td>
+                    </tr>
+                  ) : error ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-6 text-center text-red-500">
+                        {error}
+                      </td>
+                    </tr>
+                  ) : bills.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-6 text-center text-gray-500">
+                        Belum ada data
+                      </td>
+                    </tr>
+                  ) : (
+                    bills.map((bill, index) => (
+                      <tr key={bill.id} className="hover:bg-gray-50">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-gray-900 border-r border-[#345915] text-center">
+                          {index + 1}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-gray-900 border-r border-[#345915] text-center">
+                          {bill.panel?.namePanel || '-'}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-gray-900 border-r border-[#345915] text-center">
+                          {formatDate(bill.billingMonth)}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-gray-900 border-r border-[#345915] text-center">
+                          {typeof bill.kwhUse === 'string' ? parseFloat(bill.kwhUse) : Number(bill.kwhUse)}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-gray-900 border-r border-[#345915] text-center">
+                          {formatCurrency(typeof bill.totalBills === 'string' ? parseFloat(bill.totalBills) : Number(bill.totalBills))}
+                        </td>
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-gray-900 text-center">
+                          <div className="flex justify-center gap-2">
+                            <button
+                              className="flex items-center justify-center rounded bg-amber-500 hover:bg-amber-600 transition-colors duration-200 w-9 h-9"
+                              onClick={() => handleEdit(bill)}
+                              title="Edit"
+                            >
+                              <svg
+                                className="w-5 h-5 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              className="flex items-center justify-center rounded bg-red-500 hover:bg-red-600 transition-colors duration-200 w-9 h-9"
+                              onClick={() => handleDeleteClick(bill)}
+                              title="Delete"
+                            >
+                              <svg
+                                className="w-5 h-5 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
