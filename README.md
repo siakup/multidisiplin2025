@@ -2,15 +2,6 @@
 
 Sistem manajemen tagihan listrik dengan Next.js, TypeScript, dan arsitektur yang terstruktur.
 
-## 📚 API Documentation
-
-**Live Documentation (Swagger UI):**
-- 🔗 Local: http://localhost:3000/docs
-- 🌐 Production: https://your-api.vercel.app/docs
-
-**OpenAPI Specification:**
-- 📄 JSON: http://localhost:3000/api/docs/swagger.json
-
 ## 🚀 Fitur Utama
 
 - **Framework**: Next.js 15 dengan App Router
