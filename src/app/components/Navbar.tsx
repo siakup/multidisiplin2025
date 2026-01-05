@@ -95,45 +95,40 @@ export default function Navbar() {
             )}
 
             {canAccessStudentHousing && (
-              <NavItem
+              <Link
                 href="/student-housing"
-                active={pathname === '/student-housing' || pathname.startsWith('/student-housing/')}
+                className={`flex items-center space-x-2 transition-colors duration-200 px-4 py-2 rounded-lg ${
+                  pathname === '/student-housing' || pathname.startsWith('/student-housing/')
+                    ? 'border-2 text-gray-800' 
+                    : 'text-gray-700 border-2 border-transparent'
+                }`}
+                style={{
+                  borderColor: (pathname === '/student-housing' || pathname.startsWith('/student-housing/')) ? '#172813' : 'transparent'
+                }}
               >
-                Asrama Beasiswa
-              </NavItem>
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M22 10v6M2 10l10-5 10 5-10 5z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 12v5c3 3 9 3 12 0v-5"
+                    />
+                  </svg>
+                  <span className="font-medium">Asrama Beasiswa</span>
+                </Link>
             )}
-          </div>
-        </div>
-
-        {/* Mobile drawer */}
-        {open && (
-          <div className="lg:hidden pb-4 border-t border-gray-200">
-            <div className="flex flex-col gap-2 pt-4">
-              <NavItem href="/dashboard" active={pathname === '/dashboard'} mobile onClick={() => setOpen(false)}>
-                Dashboard
-              </NavItem>
-
-              {canAccessElectricity && (
-                <NavItem
-                  href="/electricity-bills"
-                  active={pathname === '/electricity-bills' || pathname.startsWith('/electricity-bills/')}
-                  mobile
-                  onClick={() => setOpen(false)}
-                >
-                  Tagihan Listrik
-                </NavItem>
-              )}
-
-              {canAccessStudentHousing && (
-                <NavItem
-                  href="/student-housing"
-                  active={pathname === '/student-housing' || pathname.startsWith('/student-housing/')}
-                  mobile
-                  onClick={() => setOpen(false)}
-                >
-                  Asrama Beasiswa
-                </NavItem>
-              )}
             </div>
           </div>
         )}
