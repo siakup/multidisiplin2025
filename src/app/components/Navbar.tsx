@@ -97,41 +97,39 @@ export default function Navbar() {
             {canAccessStudentHousing && (
               <Link
                 href="/student-housing"
-                className={`flex items-center space-x-2 transition-colors duration-200 px-4 py-2 rounded-lg ${
-                  pathname === '/student-housing' || pathname.startsWith('/student-housing/')
-                    ? 'border-2 text-gray-800' 
+                className={`flex items-center space-x-2 transition-colors duration-200 px-4 py-2 rounded-lg ${pathname === '/student-housing' || pathname.startsWith('/student-housing/')
+                    ? 'border-2 text-gray-800'
                     : 'text-gray-700 border-2 border-transparent'
-                }`}
+                  }`}
                 style={{
                   borderColor: (pathname === '/student-housing' || pathname.startsWith('/student-housing/')) ? '#172813' : 'transparent'
                 }}
               >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M22 10v6M2 10l10-5 10 5-10 5z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 12v5c3 3 9 3 12 0v-5"
-                    />
-                  </svg>
-                  <span className="font-medium">Asrama Beasiswa</span>
-                </Link>
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M22 10v6M2 10l10-5 10 5-10 5z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 12v5c3 3 9 3 12 0v-5"
+                  />
+                </svg>
+                <span className="font-medium">Asrama Beasiswa</span>
+              </Link>
             )}
-            </div>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
