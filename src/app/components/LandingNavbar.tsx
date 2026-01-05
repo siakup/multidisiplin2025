@@ -21,7 +21,7 @@ export default function LandingNavbar() {
           <div className="flex items-center gap-3 sm:gap-4">
             <Link
               href="/login"
-              className="inline-flex items-center rounded-xl bg-[#12250F] px-5 py-2 text-white hover:opacity-95 text-sm sm:text-base"
+              className="inline-flex items-center rounded-xl bg-[var(--color-12250f)] px-5 py-2 text-white hover:opacity-95 text-sm sm:text-base transition-colors"
             >
               Masuk
             </Link>

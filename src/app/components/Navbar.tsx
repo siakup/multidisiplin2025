@@ -62,12 +62,13 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#172813]"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle navigation"
-          >
+          {/* Mobile menu toggle */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <button
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-172813)]"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle navigation"
+            >
             {open ? (
               <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -77,7 +78,8 @@ export default function Navbar() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
-          </button>
+            </button>
+          </div>
 
           {/* Navigation Links */}
           <div className="hidden lg:flex items-center space-x-6">
@@ -130,6 +132,39 @@ export default function Navbar() {
             )}
           </div>
         </div>
+
+        {/* Mobile drawer */}
+        {open && (
+          <div className="lg:hidden pb-4 border-t border-gray-200">
+            <div className="flex flex-col gap-2 pt-4 px-2">
+              <NavItem href="/dashboard" active={pathname === '/dashboard'} mobile onClick={() => setOpen(false)}>
+                Dashboard
+              </NavItem>
+
+              {canAccessElectricity && (
+                <NavItem
+                  href="/electricity-bills"
+                  active={pathname === '/electricity-bills' || pathname.startsWith('/electricity-bills/')}
+                  mobile
+                  onClick={() => setOpen(false)}
+                >
+                  Tagihan Listrik
+                </NavItem>
+              )}
+
+              {canAccessStudentHousing && (
+                <NavItem
+                  href="/student-housing"
+                  active={pathname === '/student-housing' || pathname.startsWith('/student-housing/')}
+                  mobile
+                  onClick={() => setOpen(false)}
+                >
+                  Asrama Beasiswa
+                </NavItem>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
@@ -146,7 +181,7 @@ type NavItemProps = {
 function NavItem({ href, active, children, mobile, onClick }: NavItemProps) {
   const base =
     'flex items-center gap-2 transition-colors duration-200 px-4 py-2 rounded-lg border-2 border-transparent text-gray-700';
-  const activeClass = active ? 'border-[#172813] text-gray-900' : 'hover:border-[#d1d5db] hover:text-gray-900';
+  const activeClass = active ? 'border-[var(--color-172813)] text-gray-900' : 'hover:border-[#d1d5db] hover:text-gray-900';
   const mobileClass = mobile ? 'w-full justify-start' : '';
 
   return (

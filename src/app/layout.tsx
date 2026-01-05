@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import NavbarSwitcher from "./components/NavbarSwitcher";
+import ColorblindModeProviderWrapper from "@/components/ColorblindModeProvider";
+import ColorblindModeToggle from "@/components/ColorblindModeToggle";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -24,8 +26,12 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} antialiased`}
       >
-        <NavbarSwitcher />
-        {children}
+        <ColorblindModeProviderWrapper>
+          <NavbarSwitcher />
+          {children}
+          {/* Fixed toggle button di kanan atas */}
+          <ColorblindModeToggle fixed />
+        </ColorblindModeProviderWrapper>
       </body>
     </html>
   );
