@@ -1,7 +1,7 @@
 'use client';
 
 import { Text } from '@/components/Text';
-import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
 import { useEffect, useMemo, useState } from 'react';
 import ChartComparison from './ChartComparison';
 import { api } from '@/lib/common/utils/api';
@@ -19,29 +19,54 @@ interface ElectricityBill {
 export default function DashboardPage() {
   useAutoLogout({ idleTime: 300000 });
 
+  const { isAuthorized, isChecking } = useRequireAuth();
+
   const [bills, setBills] = useState<ElectricityBill[]>([]);
   const [dormRecords, setDormRecords] = useState<Array<{ period: string; billAmount: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isAuthorized) {
+      fetchData();
+    }
+  }, [isAuthorized]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const [data, dorm] = await Promise.all([
-        api.get<ElectricityBill[]>('/electricity-bills'),
-        api.get<any[]>('/dorm-record'),
-      ]);
-      setBills(data || []);
-      setDormRecords((dorm || []).map((r) => ({ period: r.period, billAmount: Number(r.billAmount || r.billAmount || 0) })));
+
+      // Fetch datasets independently so one failure doesn't block the other
+      const fetchElectricity = async () => {
+        try {
+          const data = await api.get<ElectricityBill[]>('/electricity-bills');
+          setBills(data || []);
+        } catch (err: any) {
+          console.error('Electricity fetch error:', err);
+          // If it's a 403/Forbidden or 401/Unauthorized from the API, we just keep bills empty
+          setBills([]);
+        }
+      };
+
+      const fetchDorm = async () => {
+        try {
+          const dorm = await api.get<any[]>('/dorm-record');
+          setDormRecords((dorm || []).map((r) => ({
+            period: r.period,
+            billAmount: Number(r.billAmount || 0)
+          })));
+        } catch (err: any) {
+          console.error('Dorm record fetch error:', err);
+          setDormRecords([]);
+        }
+      };
+
+      await Promise.allSettled([fetchElectricity(), fetchDorm()]);
+
     } catch (err: any) {
-      console.error('Dashboard fetch error:', err);
+      console.error('Dashboard general fetch error:', err);
       setError(err.message || 'Gagal memuat data');
-      setBills([]);
     } finally {
       setLoading(false);
     }
@@ -110,6 +135,18 @@ export default function DashboardPage() {
     const month = date.toLocaleDateString('id-ID', { month: 'long' });
     return `${month} ${year}`;
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-600">Memuat...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null; // Will redirect via hook
+  }
 
   return (
     <div className="min-h-screen bg-white font-sans">
