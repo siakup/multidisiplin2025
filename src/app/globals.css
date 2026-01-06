@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  
+  /* Color variables untuk mode normal */
+  --color-eff6e9: #EFF6E9;
+  --color-b9d6a1: #B9D6A1;
+  --color-b8ff80: #B8FF80;
+  --color-5ea127: #5EA127;
+  --color-345915: #345915;
+  --color-172813: #172813;
+  --color-000000: #000000;
+  --color-da0000: #DA0000;
+  --color-ff9500: #FF9500;
+  --color-12250f: #12250F;
+  --color-1a2f15: #1a2f15;
+  --color-6cb33f: #6CB33F;
+}
+
+/* Mode Deuteranopia */
+html.colorblind-deuteranopia {
+  --color-eff6e9: #F1F1EC;
+  --color-b9d6a1: #C3C1B0;
+  --color-b8ff80: #D2CDA6;
+  --color-5ea127: #77724B;
+  --color-345915: #413F29;
+  --color-172813: #1D1C19;
+  --color-000000: #000000;
+  --color-da0000: #889800;
+  --color-ff9500: #D7DF2C;
+  --color-12250f: #1D1C19;
+  --color-1a2f15: #1D1C19;
+  --color-6cb33f: #77724B;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-poppins);
+}
+
+/* Dark mode disabled - always use light theme */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  background: #ffffff;
+  color: var(--foreground);
+  font-family: var(--font-poppins), sans-serif;
+}
+
+/* Nonaktifkan ikon reveal password bawaan (Edge/IE/variasi Chromium) */
+input[type='password']::-ms-reveal,
+input[type='password']::-ms-clear {
+  display: none;
+}
+
+/* Sembunyikan tombol autofill/reveal khusus WebKit jika ada */
+input[type='password']::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none;
+}
+
+/* Custom focus ring menggunakan CSS variables */
+.focus-ring-colorblind:focus {
+  --tw-ring-color: var(--color-12250f);
+  --tw-ring-opacity: 1;
+}

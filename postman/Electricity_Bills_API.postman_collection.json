@@ -1,0 +1,597 @@
+{
+	"info": {
+		"_postman_id": "electricity-bills-api-collection",
+		"name": "Electricity Bills API",
+		"description": "API Collection untuk Electricity Bills Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.test(\"Status code is 201\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"    ",
+									"    pm.test(\"Response has user data\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('email');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"username\": \"testuser\",\n  \"password\": \"123456\",\n  \"name\": \"Test User\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register user baru. Email atau username harus diisi (salah satu atau keduanya).\n\nContoh dengan email:\n{\"email\": \"test@example.com\", \"password\": \"123456\", \"name\": \"Test User\"}\n\nContoh dengan username:\n{\"username\": \"testuser\", \"password\": \"123456\", \"name\": \"Test User\"}"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Status code is 200\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    pm.test(\"Response has tokens\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('accessToken');",
+									"        pm.expect(jsonData).to.have.property('refreshToken');",
+									"        ",
+									"        // Simpan token untuk request berikutnya",
+									"        pm.environment.set(\"accessToken\", jsonData.accessToken);",
+									"        pm.environment.set(\"refreshToken\", jsonData.refreshToken);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"Facility management\",\n  \"password\": \"1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login dengan email atau username dan password. Field 'email' bisa berisi email atau username. Mengembalikan accessToken dan refreshToken.\n\nContoh:\n- Username: {\"email\": \"Facility management\", \"password\": \"1234\"}\n- Email: {\"email\": \"user@example.com\", \"password\": \"123456\"}"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh access token menggunakan refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{refreshToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout user dan invalidate refresh token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Panel",
+			"item": [
+				{
+					"name": "Get All Panels",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/panel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel"
+							]
+						},
+						"description": "Mendapatkan semua panel yang tersedia"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Panel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.test(\"Status code is 201\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"    ",
+									"    pm.test(\"Response has panel data\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('namePanel');",
+									"        ",
+									"        // Simpan panel ID untuk testing berikutnya",
+									"        pm.environment.set(\"panelId\", jsonData.id);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"namePanel\": \"Test Panel 01\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel"
+							]
+						},
+						"description": "Membuat panel baru"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Panel by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/panel/{{panelId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"{{panelId}}"
+							]
+						},
+						"description": "Mendapatkan panel berdasarkan ID. Ganti {{panelId}} dengan ID yang valid."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Panel",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"namePanel\": \"Updated Panel Name\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/panel/{{panelId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"{{panelId}}"
+							]
+						},
+						"description": "Update panel berdasarkan ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Panel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/panel/{{panelId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"panel",
+								"{{panelId}}"
+							]
+						},
+						"description": "Menghapus panel berdasarkan ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Electricity Bills",
+			"item": [
+				{
+					"name": "Get All Bills",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/electricity-bills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"electricity-bills"
+							]
+						},
+						"description": "Mendapatkan semua electricity bills. **PENTING**: Memerlukan autentikasi. Pastikan sudah login terlebih dahulu."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bills with Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/electricity-bills?userId=1&panelId=1&billingMonth=2024-01-01",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"electricity-bills"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "1",
+									"description": "Filter by user ID"
+								},
+								{
+									"key": "panelId",
+									"value": "1",
+									"description": "Filter by panel ID"
+								},
+								{
+									"key": "billingMonth",
+									"value": "2024-01-01",
+									"description": "Filter by billing month (YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "Mendapatkan electricity bills dengan filter opsional"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Electricity Bill",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    pm.test(\"Status code is 201\", function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"    ",
+									"    pm.test(\"Response has bill data\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('id');",
+									"        pm.expect(jsonData).to.have.property('panelId');",
+									"        pm.expect(jsonData).to.have.property('userId');",
+									"        ",
+									"        // Simpan bill ID untuk testing berikutnya",
+									"        pm.environment.set(\"billId\", jsonData.id);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"panelId\": 1,\n  \"userId\": 1,\n  \"billingMonth\": \"2024-01-01\",\n  \"kwhUse\": 1500.50,\n  \"totalBills\": 2500000.00,\n  \"vaStatus\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/electricity-bills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"electricity-bills"
+							]
+						},
+						"description": "Membuat electricity bill baru. **PENTING**: Pastikan sudah login terlebih dahulu untuk mendapatkan accessToken. Pastikan panelId dan userId sudah ada di database. Field statusPay tidak perlu dikirim karena akan otomatis di-set menjadi 'Belum Lunas' oleh database."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bill by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/electricity-bills/{{billId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"electricity-bills",
+								"{{billId}}"
+							]
+						},
+						"description": "Mendapatkan electricity bill berdasarkan ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Electricity Bill",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"kwhUse\": 2000.00,\n  \"totalBills\": 3000000.00,\n  \"statusPay\": \"Lunas\",\n  \"vaStatus\": \"Inactive\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/electricity-bills/{{billId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"electricity-bills",
+								"{{billId}}"
+							]
+						},
+						"description": "Update electricity bill. Hanya field yang dikirim akan di-update."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Electricity Bill",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/electricity-bills/{{billId}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"electricity-bills",
+								"{{billId}}"
+							]
+						},
+						"description": "Menghapus electricity bill berdasarkan ID"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "panelId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "billId",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
+
