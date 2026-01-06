@@ -1,7 +1,7 @@
 'use client';
 
 import { Text } from '@/components/Text';
-import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
+import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
 import { useEffect, useMemo, useState } from 'react';
 import ChartComparison from './ChartComparison';
 import { api } from '@/lib/common/utils/api';
@@ -19,54 +19,40 @@ interface ElectricityBill {
 export default function DashboardPage() {
   useAutoLogout({ idleTime: 300000 });
 
-  const { isAuthorized, isChecking } = useRequireAuth();
-
   const [bills, setBills] = useState<ElectricityBill[]>([]);
   const [dormRecords, setDormRecords] = useState<Array<{ period: string; billAmount: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'facility-management' | 'student-housing'>('facility-management');
 
   useEffect(() => {
-    if (isAuthorized) {
-      fetchData();
+    fetchData();
+
+    // Set default tab based on user role
+    const userRole = localStorage.getItem('userRole');
+    const studentRoles = ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'];
+
+    if (userRole && studentRoles.some(r => r.toLowerCase() === userRole.toLowerCase())) {
+      setActiveTab('student-housing');
+    } else {
+      setActiveTab('facility-management');
     }
-  }, [isAuthorized]);
+  }, []);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Fetch datasets independently so one failure doesn't block the other
-      const fetchElectricity = async () => {
-        try {
-          const data = await api.get<ElectricityBill[]>('/electricity-bills');
-          setBills(data || []);
-        } catch (err: any) {
-          console.error('Electricity fetch error:', err);
-          // If it's a 403/Forbidden or 401/Unauthorized from the API, we just keep bills empty
-          setBills([]);
-        }
-      };
-
-      const fetchDorm = async () => {
-        try {
-          const dorm = await api.get<any[]>('/dorm-record');
-          setDormRecords((dorm || []).map((r) => ({
-            period: r.period,
-            billAmount: Number(r.billAmount || 0)
-          })));
-        } catch (err: any) {
-          console.error('Dorm record fetch error:', err);
-          setDormRecords([]);
-        }
-      };
-
-      await Promise.allSettled([fetchElectricity(), fetchDorm()]);
-
+      const [data, dorm] = await Promise.all([
+        api.get<ElectricityBill[]>('/electricity-bills'),
+        api.get<any[]>('/dorm-record'),
+      ]);
+      setBills(data || []);
+      setDormRecords((dorm || []).map((r) => ({ period: r.period, billAmount: Number(r.billAmount || r.billAmount || 0) })));
     } catch (err: any) {
-      console.error('Dashboard general fetch error:', err);
+      console.error('Dashboard fetch error:', err);
       setError(err.message || 'Gagal memuat data');
+      setBills([]);
     } finally {
       setLoading(false);
     }
@@ -136,96 +122,75 @@ export default function DashboardPage() {
     return `${month} ${year}`;
   };
 
-  if (isChecking) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-gray-600">Memuat...</p>
-      </div>
-    );
-  }
-
-  if (!isAuthorized) {
-    return null; // Will redirect via hook
-  }
+  // Metabase Dashboard URLs
+  const DASHBOARD_URLS = {
+    'facility-management': 'https://metabaseuppper.ac.id/public/dashboard/0ac24f91-9bb9-4b8c-a7cb-041d8722479c',
+    'student-housing': 'https://metabaseuppper.ac.id/public/dashboard/0ac24f91-9bb9-4b8c-a7cb-041d8722479c', // TODO: Ganti dengan URL Student Housing yang sesuai
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h1 className="font-bold text-black text-3xl mb-6">Dashboard Tagihan Listrik</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 className="font-bold text-black text-3xl mb-8">Dashboard Monitoring & Analisis</h1>
 
-        {loading ? (
+        {loading && !bills.length ? (
           <p className="text-gray-600">Memuat data...</p>
-        ) : error ? (
-          <p className="text-red-600">{error}</p>
         ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div className="p-4 bg-white rounded shadow border">
-                <div className="text-sm text-gray-500">Total Jumlah Tagihan</div>
-                <div className="text-2xl font-semibold mt-2">{formatCurrency(totalBills)}</div>
-              </div>
-              <div className="p-4 bg-white rounded shadow border">
-                <div className="text-sm text-gray-500">Total kWh</div>
-                <div className="text-2xl font-semibold mt-2">{Number(totalKwh).toLocaleString('id-ID')}</div>
-              </div>
-              <div className="p-4 bg-white rounded shadow border">
-                <div className="text-sm text-gray-500">Rata-rata kWh per Tagihan</div>
-                <div className="text-2xl font-semibold mt-2">{avgKwh.toFixed(2)}</div>
-              </div>
-              <div className="p-4 bg-white rounded shadow border">
-                <div className="text-sm text-gray-500">Belum Lunas</div>
-                <div className="text-2xl font-semibold mt-2">{unpaidCount}</div>
-              </div>
+          <div className="space-y-8">
+            {/* Dashboard Switcher Buttons */}
+            <div className="flex flex-wrap gap-4 mb-6">
+              <button
+                onClick={() => setActiveTab('facility-management')}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'facility-management'
+                    ? 'bg-[#12250F] text-white border-[#12250F] shadow-lg transform scale-105'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#12250F] hover:text-[#12250F]'
+                  }`}
+              >
+                Facility Management
+              </button>
+              <button
+                onClick={() => setActiveTab('student-housing')}
+                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'student-housing'
+                    ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
+                  }`}
+              >
+                Student Housing
+              </button>
             </div>
 
-            {/* Chart: perbandingan Tagihan Listrik vs Student Housing */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-3">Perbandingan: Tagihan Listrik vs Student Housing (6 bulan)</h2>
-              <div className="bg-white rounded shadow border p-4">
-                <div style={{ width: '100%', height: 260 }}>
-                  <ChartComparison series={monthlySeries} />
-                </div>
-              </div>
+            {/* Metabase Iframe Section */}
+            <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+              <iframe
+                src={DASHBOARD_URLS[activeTab]}
+                frameBorder="0"
+                width="100%"
+                height="800"
+                allowTransparency
+                style={{ minHeight: '800px' }}
+                title={`${activeTab === 'facility-management' ? 'Facility Management' : 'Student Housing'} Dashboard`}
+              ></iframe>
             </div>
 
-            <div>
-              <h2 className="text-xl font-semibold mb-3">5 Tagihan Terbaru</h2>
-              <div className="bg-white rounded shadow border overflow-x-auto">
-                <table className="min-w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-2 text-left">#</th>
-                      <th className="px-4 py-2 text-left">Panel</th>
-                      <th className="px-4 py-2 text-left">Bulan</th>
-                      <th className="px-4 py-2 text-left">kWh</th>
-                      <th className="px-4 py-2 text-left">Jumlah</th>
-                      <th className="px-4 py-2 text-left">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {latest.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="px-4 py-4 text-center text-gray-500">Belum ada data</td>
-                      </tr>
-                    ) : (
-                      latest.map((b, i) => (
-                        <tr key={b.id} className="border-t">
-                          <td className="px-4 py-3">{i + 1}</td>
-                          <td className="px-4 py-3">{b.panel?.namePanel || '-'}</td>
-                          <td className="px-4 py-3">{formatDate(b.billingMonth)}</td>
-                          <td className="px-4 py-3">{typeof b.kwhUse === 'string' ? parseFloat(b.kwhUse) : Number(b.kwhUse)}</td>
-                          <td className="px-4 py-3">{formatCurrency(typeof b.totalBills === 'string' ? parseFloat(b.totalBills) : Number(b.totalBills))}</td>
-                          <td className="px-4 py-3">{b.statusPay || '-'}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+            {/* Quick Stats Overview (Optional, from local data) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Tagihan (Local)</div>
+                <div className="text-xl font-bold text-[#12250F] mt-1">{formatCurrency(totalBills)}</div>
+              </div>
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total kWh (Local)</div>
+                <div className="text-xl font-bold text-[#12250F] mt-1">{Number(totalKwh).toLocaleString('id-ID')}</div>
+              </div>
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Belum Lunas</div>
+                <div className="text-xl font-bold text-red-600 mt-1">{unpaidCount}</div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
   );
 }
+
