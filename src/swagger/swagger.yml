@@ -1,0 +1,36 @@
+openapi: 3.0.1
+info:
+  title: Electricity Bills API
+  version: 1.0.0
+  description: API documentation untuk sistem tagihan listrik
+
+servers:
+  - url: http://localhost:3000
+    description: Local Dev Server
+
+paths:
+  /bills:
+    get:
+      summary: Get all bills
+      tags:
+        - Bills
+      responses:
+        '200':
+          description: Berhasil mengambil daftar tagihan
+
+  /bills/{id}:
+    get:
+      summary: Get bill by ID
+      tags:
+        - Bills
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Data tagihan ditemukan
+        '404':
+          description: Tagihan tidak ditemukan
