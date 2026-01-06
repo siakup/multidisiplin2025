@@ -5,6 +5,7 @@ import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
 import { useEffect, useMemo, useState } from 'react';
 import ChartComparison from './ChartComparison';
 import { api } from '@/lib/common/utils/api';
+import { format } from 'date-fns';
 
 interface ElectricityBill {
   id: number;
@@ -48,7 +49,7 @@ export default function DashboardPage() {
         api.get<any[]>('/dorm-record'),
       ]);
       setBills(data || []);
-      setDormRecords((dorm || []).map((r) => ({ period: r.period, billAmount: Number(r.billAmount || r.billAmount || 0) })));
+      setDormRecords((dorm || []).map((r) => ({ period: r.period, billAmount: Number(r.billAmount || 0) })));
     } catch (err: any) {
       console.error('Dashboard fetch error:', err);
       setError(err.message || 'Gagal memuat data');
@@ -65,40 +66,6 @@ export default function DashboardPage() {
     }, 0);
   }, [bills]);
 
-  // prepare monthly series for comparison (last 6 months)
-  const monthlySeries = useMemo(() => {
-    const mapMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
-
-    const monthsSet = new Set<string>();
-
-    // collect months from both sources
-    bills.forEach((b) => monthsSet.add(mapMonth(new Date(b.billingMonth))));
-    dormRecords.forEach((r) => monthsSet.add(mapMonth(new Date(r.period))));
-
-    const months = Array.from(monthsSet).sort().slice(-6);
-
-    const billTotals = months.map((m) => {
-      const total = bills.reduce((s, b) => {
-        const mkey = mapMonth(new Date(b.billingMonth));
-        if (mkey !== m) return s;
-        const v = typeof b.totalBills === 'string' ? parseFloat(b.totalBills || '0') : Number(b.totalBills || 0);
-        return s + (isNaN(v) ? 0 : v);
-      }, 0);
-      return total;
-    });
-
-    const dormTotals = months.map((m) => {
-      const total = dormRecords.reduce((s, r) => {
-        const mkey = mapMonth(new Date(r.period));
-        if (mkey !== m) return s;
-        return s + (isNaN(Number(r.billAmount)) ? 0 : Number(r.billAmount));
-      }, 0);
-      return total;
-    });
-
-    return { months, billTotals, dormTotals };
-  }, [bills, dormRecords]);
-
   const totalKwh = useMemo(() => {
     return bills.reduce((s, b) => {
       const v = typeof b.kwhUse === 'string' ? parseFloat(b.kwhUse || '0') : Number(b.kwhUse || 0);
@@ -106,26 +73,42 @@ export default function DashboardPage() {
     }, 0);
   }, [bills]);
 
-  const avgKwh = bills.length > 0 ? totalKwh / bills.length : 0;
-
   const unpaidCount = bills.filter((b) => (b.statusPay || '').toLowerCase().includes('belum') || (b.statusPay || '').toLowerCase().includes('unpaid')).length;
-
-  const latest = bills.slice().sort((a, b) => new Date(b.billingMonth).getTime() - new Date(a.billingMonth).getTime()).slice(0, 5);
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = date.toLocaleDateString('id-ID', { month: 'long' });
-    return `${month} ${year}`;
-  };
-
-  // Metabase Dashboard URLs
   const DASHBOARD_URLS = {
     'facility-management': 'https://metabaseuppper.ac.id/public/dashboard/0ac24f91-9bb9-4b8c-a7cb-041d8722479c',
     'student-housing': 'https://metabaseuppper.ac.id/public/dashboard/0ac24f91-9bb9-4b8c-a7cb-041d8722479c', // TODO: Ganti dengan URL Student Housing yang sesuai
+  };
+
+  const handleExport = async (exportFormat: 'csv' | 'pdf') => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`/api/export/student-housing?format=${exportFormat}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Gagal mengekspor data');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `student_housing_export_${format(new Date(), 'yyyyMMdd')}.${exportFormat}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      alert(err.message);
+    }
   };
 
   return (
@@ -138,12 +121,12 @@ export default function DashboardPage() {
         ) : (
           <div className="space-y-8">
             {/* Dashboard Switcher Buttons */}
-            <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex flex-wrap gap-4 items-center mb-6">
               <button
                 onClick={() => setActiveTab('facility-management')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'facility-management'
-                    ? 'bg-[#12250F] text-white border-[#12250F] shadow-lg transform scale-105'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#12250F] hover:text-[#12250F]'
+                  ? 'bg-[#12250F] text-white border-[#12250F] shadow-lg transform scale-105'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-[#12250F] hover:text-[#12250F]'
                   }`}
               >
                 Facility Management
@@ -151,12 +134,36 @@ export default function DashboardPage() {
               <button
                 onClick={() => setActiveTab('student-housing')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'student-housing'
-                    ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
+                  ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
                   }`}
               >
                 Student Housing
               </button>
+
+              {/* Export Buttons (Only visible for Student Housing tab) */}
+              {activeTab === 'student-housing' && (
+                <div className="flex gap-2 ml-auto">
+                  <button
+                    onClick={() => handleExport('csv')}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                  </button>
+                  <button
+                    onClick={() => handleExport('pdf')}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export PDF
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Metabase Iframe Section */}
@@ -193,4 +200,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

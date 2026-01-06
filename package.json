@@ -23,6 +23,8 @@
     "bcryptjs": "^3.0.2",
     "date-fns": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^4.0.0",
+    "jspdf-autotable": "^5.0.7",
     "next": "15.5.4",
     "prop-types": "^15.8.1",
     "react": "19.1.0",
@@ -63,5 +65,8 @@
     "tsx": "^4.20.6",
     "typescript": "^5",
     "vitest": "^4.0.16"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
