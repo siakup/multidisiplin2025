@@ -69,22 +69,27 @@ export default function Navbar() {
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle navigation"
             >
-            {open ? (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
+              {open ? (
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
 
           {/* Navigation Links */}
           <div className="hidden lg:flex items-center space-x-6">
             <NavItem href="/dashboard" active={pathname === '/dashboard'}>
-              Dashboard
+              <img
+                src="/image/icons/dash-20.png"
+                alt="Dashboard"
+                className="w-5 h-5 object-contain"
+              />
+              <span>Dashboard</span>
             </NavItem>
 
             {canAccessElectricity && (
@@ -92,43 +97,27 @@ export default function Navbar() {
                 href="/electricity-bills"
                 active={pathname === '/electricity-bills' || pathname.startsWith('/electricity-bills/')}
               >
-                Tagihan Listrik
+                <img
+                  src="/image/icons/catat-20.png"
+                  alt="Tagihan"
+                  className="w-5 h-5 object-contain"
+                />
+                <span>Tagihan Listrik</span>
               </NavItem>
             )}
 
             {canAccessStudentHousing && (
-              <Link
+              <NavItem
                 href="/student-housing"
-                className={`flex items-center space-x-2 transition-colors duration-200 px-4 py-2 rounded-lg ${pathname === '/student-housing' || pathname.startsWith('/student-housing/')
-                    ? 'border-2 text-gray-800'
-                    : 'text-gray-700 border-2 border-transparent'
-                  }`}
-                style={{
-                  borderColor: (pathname === '/student-housing' || pathname.startsWith('/student-housing/')) ? '#172813' : 'transparent'
-                }}
+                active={pathname === '/student-housing' || pathname.startsWith('/student-housing/')}
               >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M22 10v6M2 10l10-5 10 5-10 5z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 12v5c3 3 9 3 12 0v-5"
-                  />
-                </svg>
-                <span className="font-medium">Asrama Beasiswa</span>
-              </Link>
+                <img
+                  src="/image/icons/housing-20.png"
+                  alt="Asrama"
+                  className="w-6 h-6 object-contain"
+                />
+                <span>Asrama Beasiswa</span>
+              </NavItem>
             )}
           </div>
         </div>
@@ -138,7 +127,12 @@ export default function Navbar() {
           <div className="lg:hidden pb-4 border-t border-gray-200">
             <div className="flex flex-col gap-2 pt-4 px-2">
               <NavItem href="/dashboard" active={pathname === '/dashboard'} mobile onClick={() => setOpen(false)}>
-                Dashboard
+                <img
+                  src="/image/icons/dash-20.png"
+                  alt="Dashboard"
+                  className="w-5 h-5 mr-2 object-contain"
+                />
+                <span>Dashboard</span>
               </NavItem>
 
               {canAccessElectricity && (
@@ -148,7 +142,12 @@ export default function Navbar() {
                   mobile
                   onClick={() => setOpen(false)}
                 >
-                  Tagihan Listrik
+                  <img
+                    src="/image/icons/catat-20.png"
+                    alt="Tagihan"
+                    className="w-5 h-5 mr-2 object-contain"
+                  />
+                  <span>Tagihan Listrik</span>
                 </NavItem>
               )}
 
@@ -159,7 +158,12 @@ export default function Navbar() {
                   mobile
                   onClick={() => setOpen(false)}
                 >
-                  Asrama Beasiswa
+                  <img
+                    src="/image/icons/housing-20.png"
+                    alt="Asrama"
+                    className="w-5 h-5 mr-2 object-contain"
+                  />
+                  <span>Asrama Beasiswa</span>
                 </NavItem>
               )}
             </div>
@@ -180,12 +184,16 @@ type NavItemProps = {
 
 function NavItem({ href, active, children, mobile, onClick }: NavItemProps) {
   const base =
-    'flex items-center gap-2 transition-colors duration-200 px-4 py-2 rounded-lg border-2 border-transparent text-gray-700';
-  const activeClass = active ? 'border-[var(--color-172813)] text-gray-900' : 'hover:border-[#d1d5db] hover:text-gray-900';
+    'flex items-center gap-2 transition-colors duration-200 px-4 py-2 rounded-lg border-2 font-semibold';
+
+  const stateClass = active
+    ? 'border-[#172813] text-[#172813]'
+    : 'border-transparent text-gray-700 hover:border-[#d1d5db] hover:text-[#172813]';
+
   const mobileClass = mobile ? 'w-full justify-start' : '';
 
   return (
-    <Link href={href} onClick={onClick} className={`${base} ${activeClass} ${mobileClass}`}>
+    <Link href={href} onClick={onClick} className={`${base} ${stateClass} ${mobileClass}`}>
       {children}
     </Link>
   );

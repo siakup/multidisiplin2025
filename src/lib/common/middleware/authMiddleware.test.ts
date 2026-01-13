@@ -1,13 +1,14 @@
+import { describe, it, expect, vi } from 'vitest';
 import { NextRequest } from 'next/server';
 import { authMiddleware } from './authMiddleware';
 import * as tokenUtils from '../utils/token';
 
 describe('authMiddleware', () => {
   it('should allow request with valid token', () => {
-    jest.spyOn(tokenUtils, 'verifyToken').mockReturnValue({ userId: '123' });
+    vi.spyOn(tokenUtils, 'verifyToken').mockReturnValue({ userId: '123' } as any);
 
     const req = {
-      headers: new Map([['authorization', 'Bearer validtoken']]),
+      headers: new Headers([['authorization', 'Bearer validtoken']]),
     } as unknown as NextRequest;
 
     const res = authMiddleware(req);
@@ -16,12 +17,12 @@ describe('authMiddleware', () => {
   });
 
   it('should reject request with invalid token', () => {
-    jest.spyOn(tokenUtils, 'verifyToken').mockImplementation(() => {
+    vi.spyOn(tokenUtils, 'verifyToken').mockImplementation(() => {
       throw new Error('invalid');
     });
 
     const req = {
-      headers: new Map([['authorization', 'Bearer invalidtoken']]),
+      headers: new Headers([['authorization', 'Bearer invalidtoken']]),
     } as unknown as NextRequest;
 
     const res = authMiddleware(req);

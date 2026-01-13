@@ -38,6 +38,13 @@ export async function apiRequest<T>(
   };
 
   if (!response.ok) {
+    if (response.status === 401) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+        window.location.href = '/login';
+      }
+    }
+
     const errorBody = await parseBody().catch(() => null);
     const message =
       (errorBody && typeof errorBody === 'object' && 'error' in errorBody && (errorBody as any).error) ||

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const authResult = await requireApiAuth(req, {
     allowedRoles: ['Student Housing', 'student housing']
   });
-  
+
   if (authResult instanceof NextResponse) return authResult;
 
   try {
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
   const authResult = await requireApiAuth(req, {
     allowedRoles: ['Student Housing', 'student housing']
   });
-  
+
   if (authResult instanceof NextResponse) return authResult;
   if (!('user' in authResult)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -100,24 +100,36 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Parse period string (format: "Januari 2025")
-    const monthNames = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ];
-    
-    const [monthName, yearStr] = period.split(' ');
-    const monthIndex = monthNames.indexOf(monthName);
-    const year = parseInt(yearStr);
-    
-    if (monthIndex === -1 || isNaN(year)) {
+    // Parse period string
+    // Try standard date format first (YYYY-MM-DD from frontend input type="month")
+    let periodDate = new Date(period);
+
+    // If invalid date, try custom localized format "Januari 2025"
+    if (isNaN(periodDate.getTime())) {
+      const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+
+      const parts = period.split(' ');
+      if (parts.length === 2) {
+        const [monthName, yearStr] = parts;
+        const monthIndex = monthNames.indexOf(monthName);
+        const year = parseInt(yearStr);
+
+        if (monthIndex !== -1 && !isNaN(year)) {
+          periodDate = new Date(year, monthIndex, 1);
+        }
+      }
+    }
+
+    // Final validation
+    if (isNaN(periodDate.getTime())) {
       return NextResponse.json(
-        { error: 'Invalid period format. Use "Januari 2025" format' },
+        { error: 'Invalid period format. Use YYYY-MM-DD or "Januari 2025" format' },
         { status: 400 }
       );
     }
-
-    const periodDate = new Date(year, monthIndex, 1);
 
     const record = await prisma.dormRecord.create({
       data: {

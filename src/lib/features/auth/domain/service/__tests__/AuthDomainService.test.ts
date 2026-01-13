@@ -1,12 +1,14 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AuthDomainService } from '@/lib/features/auth/domain/service/AuthDomainService';
 import { AppError } from '@/lib/common/errors/AppError';
 
-const mockUserRepo = { findByEmail: jest.fn() };
+const mockUserRepo = { findByEmail: vi.fn(), findByRole: vi.fn() };
 
 describe('AuthDomainService', () => {
   let service: AuthDomainService;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     service = new AuthDomainService(mockUserRepo as any);
   });
 
@@ -18,5 +20,10 @@ describe('AuthDomainService', () => {
   it('does not throw if email is available', async () => {
     mockUserRepo.findByEmail.mockResolvedValue(null);
     await expect(service.ensureEmailNotTaken('new@b.com')).resolves.toBeUndefined();
+  });
+
+  it('throws if role already exists', async () => {
+    mockUserRepo.findByRole.mockResolvedValue({ id: '1', role: 'ADMIN' });
+    await expect(service.ensureRoleNotTaken('ADMIN')).rejects.toThrow(AppError);
   });
 });

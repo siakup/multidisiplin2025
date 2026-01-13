@@ -35,6 +35,7 @@ export default function LoginPage() {
         if (response.user) {
           localStorage.setItem('userRole', response.user.role || '');
           localStorage.setItem('userUsername', response.user.username || '');
+          localStorage.setItem('userId', String(response.user.id));
         }
         router.push('/dashboard');
       }
@@ -59,6 +60,7 @@ export default function LoginPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
                 <input
                   type="text"
+                  name="role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   placeholder="Masukkan role"
@@ -71,6 +73,7 @@ export default function LoginPage() {
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
+                    name="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="********"
@@ -86,11 +89,11 @@ export default function LoginPage() {
                   >
                     {showPassword ? (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4-10-7 0-1.12.438-2.286 1.227-3.39m3.112-2.84C7.869 5.27 9.87 5 12 5c5.523 0 10 4 10 7 0 1.167-.46 2.365-1.292 3.5M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4-10-7 0-1.12.438-2.286 1.227-3.39m3.112-2.84C7.869 5.27 9.87 5 12 5c5.523 0 10 4 10 7 0 1.167-.46 2.365-1.292 3.5M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     ) : (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18M9.88 9.88A3 3 0 0012 15a3 3 0 002.12-.88M10.73 5.08A9.99 9.99 0 0112 5c5.523 0 10 4 10 7 0 1.167-.46 2.365-1.292 3.5m-2.617 2.216A9.958 9.958 0 0112 19c-5.523 0-10-4-10-7 0-1.12.438-2.286 1.227-3.39"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18M9.88 9.88A3 3 0 0012 15a3 3 0 002.12-.88M10.73 5.08A9.99 9.99 0 0112 5c5.523 0 10 4 10 7 0 1.167-.46 2.365-1.292 3.5m-2.617 2.216A9.958 9.958 0 0112 19c-5.523 0-10-4-10-7 0-1.12.438-2.286 1.227-3.39" />
                       </svg>
                     )}
                   </button>
@@ -115,7 +118,7 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section 
+        <section
           className="hidden lg:block relative h-full w-full overflow-hidden bg-white p-0 border-l border-gray-200"
           style={{
             borderTopLeftRadius: '45px',

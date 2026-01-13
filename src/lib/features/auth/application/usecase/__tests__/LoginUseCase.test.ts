@@ -1,36 +1,48 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LoginUseCase } from '@/lib/features/auth/application/usecase/LoginUseCase';
 import { AppError } from '@/lib/common/errors/AppError';
 
-const mockUserRepo = { findByEmail: jest.fn() };
-const mockBcrypt = { compare: jest.fn() };
-const mockSessionRepo = { create: jest.fn() };
-const mockTokenService = { sign: jest.fn() };
+const mockUserRepo = { findByRole: vi.fn(), findByEmail: vi.fn() };
+const mockHashService = { compare: vi.fn() };
+const mockSessionRepo = { create: vi.fn() };
+const mockTokenService = { sign: vi.fn() };
+
+// Mock UserMapper
+vi.mock('../../infrastructure/mapper/UserMapper', () => ({
+  toPublicUser: vi.fn((u) => u),
+}));
 
 describe('LoginUseCase', () => {
   let useCase: LoginUseCase;
 
   beforeEach(() => {
-    useCase = new LoginUseCase(mockUserRepo as any, mockBcrypt as any, mockSessionRepo as any, mockTokenService as any);
+    vi.clearAllMocks();
+    useCase = new LoginUseCase(
+      mockUserRepo as any,
+      mockHashService as any,
+      mockSessionRepo as any,
+      mockTokenService as any
+    );
   });
 
   it('throws if user not found', async () => {
-    mockUserRepo.findByEmail.mockResolvedValue(null);
-    await expect(useCase.execute('a@b.com', 'pass')).rejects.toThrow(AppError);
+    mockUserRepo.findByRole.mockResolvedValue(null);
+    await expect(useCase.execute({ role: 'ADMIN', password: 'pass' })).rejects.toThrow(AppError);
   });
 
   it('throws if password invalid', async () => {
-    mockUserRepo.findByEmail.mockResolvedValue({ id: '1', passwordHash: 'hash' });
-    mockBcrypt.compare.mockResolvedValue(false);
-    await expect(useCase.execute('a@b.com', 'pass')).rejects.toThrow(AppError);
+    mockUserRepo.findByRole.mockResolvedValue({ id: '1', role: 'ADMIN', passwordHash: 'hash' });
+    mockHashService.compare.mockReturnValue(false);
+    await expect(useCase.execute({ role: 'ADMIN', password: 'pass' })).rejects.toThrow(AppError);
   });
 
   it('returns tokens if credentials valid', async () => {
-    mockUserRepo.findByEmail.mockResolvedValue({ id: '1', passwordHash: 'hash' });
-    mockBcrypt.compare.mockResolvedValue(true);
+    mockUserRepo.findByRole.mockResolvedValue({ id: '1', role: 'ADMIN', passwordHash: 'hash' });
+    mockHashService.compare.mockReturnValue(true);
     mockTokenService.sign.mockReturnValue('token');
     mockSessionRepo.create.mockResolvedValue({} as any);
 
-    const result = await useCase.execute('a@b.com', 'pass');
+    const result = await useCase.execute({ role: 'ADMIN', password: 'pass' });
     expect(result.accessToken).toBe('token');
     expect(result.refreshToken).toBe('token');
   });

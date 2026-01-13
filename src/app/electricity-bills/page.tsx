@@ -48,6 +48,8 @@ export default function ElectricityBillsPage() {
   const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
   const [showDeleteErrorModal, setShowDeleteErrorModal] = useState(false);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string>('');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isColorBlindMode, setIsColorBlindMode] = useState(false);
 
   useEffect(() => {
     fetchPanels();
@@ -251,233 +253,274 @@ export default function ElectricityBillsPage() {
     <div className="min-h-screen bg-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Page Title */}
-        <h1 className="font-bold text-black text-center mb-8" style={{fontSize: '48pt'}}>
+        <h1 className="font-bold text-black text-center mb-8" style={{ fontSize: '48pt' }}>
           Data Tagihan Listrik
         </h1>
 
-        {/* Action Buttons */}
-        <div className="flex justify-center items-center mb-4">
-          {/* Left side buttons */}
-          <div className="flex" style={{gap: '17px'}}>
-            <button 
-              className="text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200" 
-              style={{backgroundColor: '#172813', fontSize: '20px'}} 
-              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }} 
-              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
-              onClick={handleExportData}
-            >
-              Export Data
-            </button>
-            <Link
-              href="/electricity-bills/import"
-              className="text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-              style={{backgroundColor: '#172813', fontSize: '20px'}}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
-            >
-              Import Data
-            </Link>
-          </div>
+        {/* Unified Toolbar */}
+        <div className="w-full flex justify-center mb-10 mt-8">
+          <div className="flex flex-col xl:flex-row justify-between items-center gap-1" style={{ width: 'calc(170px + 17px + 170px + 532px + 210px)' }}>
+            {/* Left Group */}
+            <div className="flex flex-col sm:flex-row items-center gap-1 w-full xl:w-auto justify-center xl:justify-start">
+              {/* Filter Nama Panel */}
+              <div className="relative group">
+                {/* Filter Nama Panel */}
+                <div className="relative group">
+                  <button
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    className={`flex items-center gap-1 px-3 py-2 rounded-md border transition-all duration-200 group
+                    ${isFilterOpen
+                        ? 'bg-[#5EA127] text-white border-[#5EA127]'
+                        : 'bg-transparent text-gray-700 border-transparent hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white'
+                      }
+                  `}
+                  >
+                    <img
+                      src="/image/icons/filter-20.png"
+                      alt="Filter"
+                      className="w-5 h-5 object-contain"
+                      style={{ filter: isFilterOpen ? 'brightness(0) invert(1)' : 'none' }}
+                    />
+                    <span className="text-lg">Filter Nama Panel</span>
+                  </button>
+                </div>
+              </div>
 
-          {/* Spacer */}
-          <div style={{width: '532px'}}></div>
-
-          {/* Right side button */}
-          <div>
-            <Link
-              href="/electricity-bills/input"
-              className="inline-flex items-center space-x-2 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-              style={{backgroundColor: '#5EA127', fontSize: '20px'}}
-              onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#6bb52d'; }}
-              onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => { e.currentTarget.style.backgroundColor = '#5EA127'; }}
-            >
-              <span>Tambah Data</span>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+              {/* Mode Buta Warna */}
+              <button
+                onClick={() => setIsColorBlindMode(!isColorBlindMode)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-md border transition-all duration-200 group
+                  ${isColorBlindMode
+                    ? 'bg-[#5EA127] text-white border-[#5EA127]'
+                    : 'bg-transparent text-gray-700 border-transparent hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white'
+                  }
+                `}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                <img
+                  src="/image/icons/buta-20.png"
+                  alt="Colorblind"
+                  className="w-5 h-5 object-contain transition-all"
+                  style={{ filter: isColorBlindMode ? 'brightness(0) invert(1)' : 'none' }}
                 />
-              </svg>
-            </Link>
-          </div>
-        </div>
+                <span className="text-lg">Mode Buta Warna</span>
+              </button>
+            </div>
 
-        {/* Filters */}
-        <div className="flex justify-center">
-          <div className=" m-2 bg-white" style={{ width: 'calc(170px + 17px + 170px + 532px + 210px)' }}>
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <label className="font-medium">Nama Panel</label>
-                <select
-                  value={panelFilter ?? ''}
-                  onChange={(e) => setPanelFilter(e.target.value ? Number(e.target.value) : null)}
-                  className="border rounded p-2"
-                >
-                  <option value="">Semua Panel</option>
-                  {panels
-                    .filter((p) => (p.category ?? 'FACILITY_MANAGEMENT') === 'FACILITY_MANAGEMENT')
-                    .map((p) => (
-                      <option key={p.id} value={p.id}>{p.namePanel}</option>
-                    ))}
-                </select>
-              </div>
+            {/* Separator (Desktop) */}
+            <div className="hidden xl:block h-8 w-px bg-gray-300 mx-1"></div>
 
-              <div className="flex items-center gap-2">
-                <label className="font-medium">Bulan</label>
-                <input
-                  type="month"
-                  value={monthFilter}
-                  onChange={(e) => setMonthFilter(e.target.value)}
-                  className="border rounded p-2"
+            {/* Right Group */}
+            <div className="flex flex-col sm:flex-row items-center gap-1 w-full xl:w-auto justify-center xl:justify-end">
+              {/* Export */}
+              <button
+                onClick={handleExportData}
+                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white active:bg-[#5EA127] active:text-white transition-all"
+              >
+                <img
+                  src="/image/icons/ex-20.png"
+                  alt="Export"
+                  className="w-5 h-5 object-contain group-active:brightness-0 group-active:invert"
                 />
-              </div>
+                <span className="text-lg">Export Data</span>
+              </button>
 
-              <div className="flex items-center gap-2">
-                <button onClick={handleApplyFilters} className="px-4 py-2 bg-green-600 text-white rounded">Terapkan</button>
-                <button onClick={handleResetFilters} className="px-4 py-2 border rounded">Reset</button>
-              </div>
+              {/* Import */}
+              <Link
+                href="/electricity-bills/import"
+                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white active:bg-[#5EA127] active:text-white transition-all"
+              >
+                <img
+                  src="/image/icons/im-20.png"
+                  alt="Import"
+                  className="w-5 h-5 object-contain group-active:brightness-0 group-active:invert"
+                />
+                <span className="text-lg">Import Data</span>
+              </Link>
+
+              {/* Tambah Data */}
+              <Link
+                href="/electricity-bills/input"
+                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white active:bg-[#5EA127] active:text-white transition-all"
+              >
+                <img
+                  src="/image/icons/tambah-20.png"
+                  alt="Add"
+                  className="w-5 h-5 object-contain group-active:brightness-0 group-active:invert"
+                />
+                <span className="text-lg">Tambah Data Tagihan Listrik</span>
+              </Link>
             </div>
           </div>
         </div>
 
+        {/* Filter Options (Collapsible) */}
+        {isFilterOpen && (
+          <div className="w-full flex justify-center mb-6 -mt-8">
+            <div className="flex flex-wrap gap-2 justify-start" style={{ width: 'calc(170px + 17px + 170px + 532px + 210px)' }}>
+              {panels
+                .filter((p) => (p.category ?? 'FACILITY_MANAGEMENT') === 'FACILITY_MANAGEMENT')
+                .map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      const newId = p.id === panelFilter ? null : p.id;
+                      setPanelFilter(newId);
+                      fetchBills(newId, monthFilter);
+                    }}
+                    className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-all duration-200 flex items-center gap-2
+                      ${panelFilter === p.id
+                        ? 'bg-white text-[#5EA127] border-[#5EA127]'
+                        : 'bg-white text-gray-700 border-gray-400 hover:border-[#5EA127] hover:text-[#5EA127]'
+                      }
+                    `}
+                  >
+                    {p.namePanel}
+                    {panelFilter === p.id && (
+                      <img
+                        src="/image/icons/ceklis-20.png"
+                        alt="Checked"
+                        className="w-4 h-4 object-contain"
+                      />
+                    )}
+                  </button>
+                ))}
+            </div>
+          </div>
+        )}
+
         {/* Data Table */}
-        <div className="flex justify-center" style={{marginTop: '39px'}}>
-          <div className="bg-white rounded-lg overflow-hidden" style={{
-            width: 'calc(170px + 17px + 170px + 532px + 210px)',
-            border: '1px solid #345915'
-          }}>
-            <table className="w-full" style={{borderCollapse: 'collapse'}}>
-            {/* Table Header */}
-            <thead style={{backgroundColor: '#93C06E'}}>
-              <tr>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  No.
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Nama Panel
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Bulan
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  kWh
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b border-r" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Jumlah Tagihan
-                </th>
-                <th className="px-6 py-4 text-center text-gray-900 border-b" style={{fontSize: '20px', fontWeight: '600', borderColor: '#345915'}}>
-                  Action
-                </th>
-              </tr>
-            </thead>
-            
-            {/* Table Body */}
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-6 text-center text-gray-500" style={{fontSize: '20px'}}>
-                    Memuat data...
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-6 text-center text-red-500" style={{fontSize: '20px'}}>
-                    {error}
-                  </td>
-                </tr>
-              ) : bills.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-6 text-center text-gray-500" style={{fontSize: '20px'}}>
-                    Belum ada data
-                  </td>
-                </tr>
-              ) : (
-                bills.map((bill, index) => (
-                  <tr key={bill.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {bill.panel?.namePanel || '-'}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {formatDate(bill.billingMonth)}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {typeof bill.kwhUse === 'string' ? parseFloat(bill.kwhUse) : Number(bill.kwhUse)}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      {formatCurrency(typeof bill.totalBills === 'string' ? parseFloat(bill.totalBills) : Number(bill.totalBills))}
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center" style={{borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px'}}>
-                      <div className="flex justify-center gap-2">
-                        <button
-                          className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
-                          style={{
-                            backgroundColor: '#F59E0B',
-                            width: '32px',
-                            height: '32px',
-                            padding: '0'
-                          }}
-                          onClick={() => handleEdit(bill)}
-                          title="Edit"
-                        >
-                          <svg
-                            className="w-5 h-5 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
-                          style={{
-                            backgroundColor: '#EF4444',
-                            width: '32px',
-                            height: '32px',
-                            padding: '0'
-                          }}
-                          onClick={() => handleDeleteClick(bill)}
-                          title="Delete"
-                        >
-                          <svg
-                            className="w-5 h-5 text-white"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
+        <div className="w-full flex justify-center" style={{ marginTop: '39px' }}>
+          <div className="w-full overflow-x-auto pb-4">
+            <div className="bg-white rounded-lg overflow-hidden mx-auto" style={{
+              width: 'calc(170px + 17px + 170px + 532px + 210px)',
+              minWidth: 'calc(170px + 17px + 170px + 532px + 210px)',
+              border: '1px solid #345915'
+            }}>
+              <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+                {/* Table Header */}
+                <thead style={{ backgroundColor: isColorBlindMode ? '#172813' : '#93C06E' }}>
+                  <tr>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                      No.
+                    </th>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                      Nama Panel
+                    </th>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                      Bulan
+                    </th>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                      kWh
+                    </th>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                      Jumlah Tagihan
+                    </th>
+                    <th className={`px-6 py-4 text-center border-b ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                      Action
+                    </th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+
+                {/* Table Body */}
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-6 text-center text-gray-500" style={{ fontSize: '20px' }}>
+                        Memuat data...
+                      </td>
+                    </tr>
+                  ) : error ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-6 text-center text-red-500" style={{ fontSize: '20px' }}>
+                        {error}
+                      </td>
+                    </tr>
+                  ) : bills.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-6 text-center text-gray-500" style={{ fontSize: '20px' }}>
+                        Belum ada data
+                      </td>
+                    </tr>
+                  ) : (
+                    bills.map((bill, index) => (
+                      <tr key={bill.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {bill.panel?.namePanel || '-'}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {formatDate(bill.billingMonth)}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {typeof bill.kwhUse === 'string' ? parseFloat(bill.kwhUse) : Number(bill.kwhUse)}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {formatCurrency(typeof bill.totalBills === 'string' ? parseFloat(bill.totalBills) : Number(bill.totalBills))}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center" style={{ borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          <div className="flex justify-center gap-2">
+                            <button
+                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
+                              style={{
+                                backgroundColor: isColorBlindMode ? '#2563EB' : '#F59E0B',
+                                width: '32px',
+                                height: '32px',
+                                padding: '0'
+                              }}
+                              onClick={() => handleEdit(bill)}
+                              title="Edit"
+                            >
+                              <svg
+                                className="w-5 h-5 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
+                              style={{
+                                backgroundColor: isColorBlindMode ? '#1F2937' : '#EF4444',
+                                width: '32px',
+                                height: '32px',
+                                padding: '0'
+                              }}
+                              onClick={() => handleDeleteClick(bill)}
+                              title="Delete"
+                            >
+                              <svg
+                                className="w-5 h-5 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 

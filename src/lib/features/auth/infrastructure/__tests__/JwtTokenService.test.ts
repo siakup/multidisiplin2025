@@ -1,6 +1,9 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { JwtTokenService } from '@/lib/features/auth/infrastructure/adapter/TokenServiceJwt';
 
-jest.mock('@/lib/common/config/env', () => ({ env: { JWT_SECRET: 'secret' } }));
+vi.mock('@/lib/common/config/env', () => ({
+  env: { JWT_SECRET: '12345678901234567890123456789012' }
+}));
 
 describe('JwtTokenService', () => {
   let service: JwtTokenService;

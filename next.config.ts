@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         hostname: 'super.universitaspertamina.ac.id',
         pathname: '/wp-content/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn-icons-png.freepik.com',
+        pathname: '/512/**',
+      },
     ],
   },
 };

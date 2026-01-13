@@ -1,16 +1,29 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { JwtTokenService } from '@/lib/features/auth/infrastructure/adapter/TokenServiceJwt';
 import { requireAuth } from '@/lib/features/auth/presentation/middleware/AuthMiddleware';
 
-jest.mock('@/lib/features/auth/infrastructure/adapter/TokenServiceJwt');
+const { mockVerify } = vi.hoisted(() => ({
+  mockVerify: vi.fn(),
+}));
+
+vi.mock('@/lib/features/auth/infrastructure/adapter/TokenServiceJwt', () => {
+  return {
+    JwtTokenService: function () {
+      return {
+        verify: mockVerify,
+      };
+    },
+  };
+});
 
 describe('requireAuth middleware', () => {
   let req: any;
   let res: any;
-  const jsonMock = jest.fn();
-  const statusMock = jest.fn(() => ({ json: jsonMock }));
+  const jsonMock = vi.fn();
+  const statusMock = vi.fn(() => ({ json: jsonMock }));
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     req = { headers: {} };
     res = { status: statusMock };
   });
@@ -22,21 +35,19 @@ describe('requireAuth middleware', () => {
   });
 
   it('calls token verify if header present', async () => {
-    const verifyMock = jest.fn().mockReturnValue({ userId: '1' });
-    (JwtTokenService as jest.Mock).mockImplementation(() => ({ verify: verifyMock }));
-    req.headers.authorization = 'Bearer token';
+    mockVerify.mockReturnValue({ userId: 1 });
+    req.headers = { authorization: 'Bearer token' };
 
     const result = await requireAuth(req, res);
-    expect(result).toEqual({ userId: '1' });
-    expect(verifyMock).toHaveBeenCalledWith('token');
+    expect(result).toEqual({ userId: 1 });
+    expect(mockVerify).toHaveBeenCalledWith('token');
   });
 
   it('returns null if verify throws', async () => {
-    const verifyMock = jest.fn(() => {
+    mockVerify.mockImplementation(() => {
       throw new Error('fail');
     });
-    (JwtTokenService as jest.Mock).mockImplementation(() => ({ verify: verifyMock }));
-    req.headers.authorization = 'Bearer token';
+    req.headers = { authorization: 'Bearer token' };
 
     const result = await requireAuth(req, res);
     expect(result).toBeNull();
