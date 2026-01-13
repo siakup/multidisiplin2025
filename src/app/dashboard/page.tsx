@@ -3,38 +3,49 @@
 import { Text } from '@/components/Text';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
 import { useEffect, useMemo, useState } from 'react';
-import ChartComparison from './ChartComparison';
-import { api } from '@/lib/common/utils/api';
 
-interface ElectricityBill {
-  id: number;
-  panel?: { id: number; namePanel?: string } | null;
-  user?: { id: number; username?: string | null } | null;
-  billingMonth: string;
-  kwhUse: number | string;
-  totalBills: number | string;
-  statusPay?: string;
-}
+import { api } from '@/lib/common/utils/api';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+
 
 export default function DashboardPage() {
   useAutoLogout({ idleTime: 300000 });
 
-  const [bills, setBills] = useState<ElectricityBill[]>([]);
+
   const [dormRecords, setDormRecords] = useState<Array<{ period: string; billAmount: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'facility-management' | 'student-housing'>('facility-management');
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [metabaseUrls, setMetabaseUrls] = useState<{
+    'facility-management': string;
+    'student-housing': string;
+  }>({
+    'facility-management': '',
+    'student-housing': '',
+  });
 
   useEffect(() => {
     fetchData();
+    fetchMetabaseUrls();
 
     // Set default tab based on user role
-    const userRole = localStorage.getItem('userRole');
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
     const studentRoles = ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'];
+    const facilityRoles = ['facility management', 'FACILITY_MANAGEMENT', 'facility_management'];
 
-    if (userRole && studentRoles.some(r => r.toLowerCase() === userRole.toLowerCase())) {
-      setActiveTab('student-housing');
+    // Only set active tab if user is logged in (has role)
+    if (role) {
+      if (studentRoles.some(r => r.toLowerCase() === role.toLowerCase())) {
+        setActiveTab('student-housing');
+      } else if (facilityRoles.some(r => r.toLowerCase() === role.toLowerCase())) {
+        setActiveTab('facility-management');
+      }
     } else {
+      // Explicitly set to facility-management if no role (not logged in)
       setActiveTab('facility-management');
     }
   }, []);
@@ -43,74 +54,38 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       setError(null);
-      const [data, dorm] = await Promise.all([
-        api.get<ElectricityBill[]>('/electricity-bills'),
-        api.get<any[]>('/dorm-record'),
-      ]);
-      setBills(data || []);
+      const dorm = await api.get<any[]>('/dorm-record');
       setDormRecords((dorm || []).map((r) => ({ period: r.period, billAmount: Number(r.billAmount || r.billAmount || 0) })));
     } catch (err: any) {
       console.error('Dashboard fetch error:', err);
       setError(err.message || 'Gagal memuat data');
-      setBills([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const totalBills = useMemo(() => {
-    return bills.reduce((s, b) => {
-      const v = typeof b.totalBills === 'string' ? parseFloat(b.totalBills || '0') : Number(b.totalBills || 0);
-      return s + (isNaN(v) ? 0 : v);
-    }, 0);
-  }, [bills]);
+  const fetchMetabaseUrls = async () => {
+    try {
+      const [facilityUrl, studentUrl] = await Promise.all([
+        fetch('/api/metabase-token?type=facility-management').then(r => r.json()),
+        fetch('/api/metabase-token?type=student-housing').then(r => r.json()),
+      ]);
 
-  // prepare monthly series for comparison (last 6 months)
-  const monthlySeries = useMemo(() => {
-    const mapMonth = (d: Date) => new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+      setMetabaseUrls({
+        'facility-management': facilityUrl.url || 'http://10.10.75.20:3000/public/dashboard/707ab46e-4d75-4cfc-8a58-d5d04321d97b',
+        'student-housing': studentUrl.url || 'http://10.10.75.20:3000/public/dashboard/f7ef96ab-63d4-48b2-9951-835ffb507f4f',
+      });
+    } catch (err) {
+      console.error('Failed to fetch Metabase URLs, using public URLs as fallback:', err);
+      // Fallback to public URLs if JWT generation fails
+      setMetabaseUrls({
+        'facility-management': 'http://10.10.75.20:3000/public/dashboard/707ab46e-4d75-4cfc-8a58-d5d04321d97b',
+        'student-housing': 'http://10.10.75.20:3000/public/dashboard/f7ef96ab-63d4-48b2-9951-835ffb507f4f',
+      });
+    }
+  };
 
-    const monthsSet = new Set<string>();
 
-    // collect months from both sources
-    bills.forEach((b) => monthsSet.add(mapMonth(new Date(b.billingMonth))));
-    dormRecords.forEach((r) => monthsSet.add(mapMonth(new Date(r.period))));
-
-    const months = Array.from(monthsSet).sort().slice(-6);
-
-    const billTotals = months.map((m) => {
-      const total = bills.reduce((s, b) => {
-        const mkey = mapMonth(new Date(b.billingMonth));
-        if (mkey !== m) return s;
-        const v = typeof b.totalBills === 'string' ? parseFloat(b.totalBills || '0') : Number(b.totalBills || 0);
-        return s + (isNaN(v) ? 0 : v);
-      }, 0);
-      return total;
-    });
-
-    const dormTotals = months.map((m) => {
-      const total = dormRecords.reduce((s, r) => {
-        const mkey = mapMonth(new Date(r.period));
-        if (mkey !== m) return s;
-        return s + (isNaN(Number(r.billAmount)) ? 0 : Number(r.billAmount));
-      }, 0);
-      return total;
-    });
-
-    return { months, billTotals, dormTotals };
-  }, [bills, dormRecords]);
-
-  const totalKwh = useMemo(() => {
-    return bills.reduce((s, b) => {
-      const v = typeof b.kwhUse === 'string' ? parseFloat(b.kwhUse || '0') : Number(b.kwhUse || 0);
-      return s + (isNaN(v) ? 0 : v);
-    }, 0);
-  }, [bills]);
-
-  const avgKwh = bills.length > 0 ? totalKwh / bills.length : 0;
-
-  const unpaidCount = bills.filter((b) => (b.statusPay || '').toLowerCase().includes('belum') || (b.statusPay || '').toLowerCase().includes('unpaid')).length;
-
-  const latest = bills.slice().sort((a, b) => new Date(b.billingMonth).getTime() - new Date(a.billingMonth).getTime()).slice(0, 5);
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
@@ -122,71 +97,152 @@ export default function DashboardPage() {
     return `${month} ${year}`;
   };
 
-  // Metabase Dashboard URLs
-  const DASHBOARD_URLS = {
-    'facility-management': 'https://metabaseuppper.ac.id/public/dashboard/0ac24f91-9bb9-4b8c-a7cb-041d8722479c',
-    'student-housing': 'https://metabaseuppper.ac.id/public/dashboard/0ac24f91-9bb9-4b8c-a7cb-041d8722479c', // TODO: Ganti dengan URL Student Housing yang sesuai
+  // Export functions
+  const handleExportCSV = () => {
+    if (dormRecords.length === 0) {
+      alert('Tidak ada data untuk diekspor');
+      return;
+    }
+
+    const headers = ['Period', 'Bill Amount (IDR)'];
+    const rows = dormRecords.map(record => [
+      formatDate(record.period),
+      formatCurrency(record.billAmount)
+    ]);
+
+    let csvContent = headers.join(',') + '\n';
+    rows.forEach(row => {
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `student_housing_data_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+
+  const handleExportPDF = () => {
+    if (dormRecords.length === 0) {
+      alert('Tidak ada data untuk diekspor');
+      return;
+    }
+
+    const doc = new jsPDF();
+
+    // Add title
+    doc.setFontSize(18);
+    doc.text('Student Housing - Electricity Report', 14, 22);
+
+    doc.setFontSize(11);
+    doc.text(`Generated: ${new Date().toLocaleDateString('id-ID')}`, 14, 30);
+
+    // Prepare table data
+    const tableData = dormRecords.map(record => [
+      formatDate(record.period),
+      formatCurrency(record.billAmount)
+    ]);
+
+    // Add table
+    autoTable(doc, {
+      head: [['Period', 'Bill Amount (IDR)']],
+      body: tableData,
+      startY: 35,
+      theme: 'grid',
+      headStyles: { fillColor: [94, 161, 39] }, // Student Housing green color
+    });
+
+    doc.save(`student_housing_report_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
+  // Check if user is Student Housing
+  const isStudentHousing = userRole && ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'].some(
+    r => r.toLowerCase() === userRole.toLowerCase()
+  );
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="font-bold text-black text-3xl mb-8">Dashboard Monitoring & Analisis</h1>
 
-        {loading && !bills.length ? (
+        {loading && !dormRecords.length ? (
           <p className="text-gray-600">Memuat data...</p>
         ) : (
           <div className="space-y-8">
             {/* Dashboard Switcher Buttons */}
             <div className="flex flex-wrap gap-4 mb-6">
-              <button
-                onClick={() => setActiveTab('facility-management')}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'facility-management'
-                    ? 'bg-[#12250F] text-white border-[#12250F] shadow-lg transform scale-105'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#12250F] hover:text-[#12250F]'
-                  }`}
-              >
-                Facility Management
-              </button>
-              <button
-                onClick={() => setActiveTab('student-housing')}
-                className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'student-housing'
+              {/* Show Facility Management button only if explicitly allowed or no specific role restriction found (fallback) */}
+              {(activeTab === 'facility-management' || !isStudentHousing) && (
+                <button
+                  onClick={() => setActiveTab('facility-management')}
+                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'facility-management'
                     ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
-                  }`}
-              >
-                Student Housing
-              </button>
+                    }`}
+                >
+                  Facility Management
+                </button>
+              )}
+
+              {(activeTab === 'student-housing' || isStudentHousing) && (
+                <button
+                  onClick={() => setActiveTab('student-housing')}
+                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'student-housing'
+                    ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
+                    }`}
+                >
+                  Student Housing
+                </button>
+              )}
+
+              {/* Export Buttons - Only for Student Housing */}
+              {isStudentHousing && activeTab === 'student-housing' && (
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleExportCSV}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                  </button>
+                  <button
+                    onClick={handleExportPDF}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Export PDF
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Metabase Iframe Section */}
-            <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-              <iframe
-                src={DASHBOARD_URLS[activeTab]}
-                frameBorder="0"
-                width="100%"
-                height="800"
-                allowTransparency
-                style={{ minHeight: '800px' }}
-                title={`${activeTab === 'facility-management' ? 'Facility Management' : 'Student Housing'} Dashboard`}
-              ></iframe>
-            </div>
+            {metabaseUrls[activeTab] ? (
+              <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                <iframe
+                  src={metabaseUrls[activeTab]}
+                  width="100%"
+                  height="800"
+                  style={{ minHeight: '800px', border: 0 }}
+                  title={`${activeTab === 'facility-management' ? 'Facility Management' : 'Student Housing'} Dashboard`}
+                ></iframe>
+              </div>
+            ) : (
+              <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 p-8 text-center">
+                <p className="text-gray-500">Loading dashboard...</p>
+              </div>
+            )}
 
-            {/* Quick Stats Overview (Optional, from local data) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Tagihan (Local)</div>
-                <div className="text-xl font-bold text-[#12250F] mt-1">{formatCurrency(totalBills)}</div>
-              </div>
-              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total kWh (Local)</div>
-                <div className="text-xl font-bold text-[#12250F] mt-1">{Number(totalKwh).toLocaleString('id-ID')}</div>
-              </div>
-              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Belum Lunas</div>
-                <div className="text-xl font-bold text-red-600 mt-1">{unpaidCount}</div>
-              </div>
-            </div>
+
           </div>
         )}
       </div>

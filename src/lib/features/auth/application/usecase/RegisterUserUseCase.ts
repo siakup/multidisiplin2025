@@ -8,42 +8,34 @@ export class RegisterUserUseCase {
   constructor(
     private userRepo: UserRepository,
     private hashService: SHA256Service
-  ) {}
+  ) { }
 
-  async execute({ email, username, password, name }: RegisterRequest) {
+  async execute({ role, password, email, name }: RegisterRequest) {
     const domainService = new AuthDomainService(this.userRepo);
 
-    // Validasi: email atau username harus ada
-    if (!email && !username) {
-      throw new AppError('Email atau username harus diisi', 400);
+    // Cek apakah role sudah diambil
+    const existingUser = await this.userRepo.findByRole(role);
+    if (existingUser) {
+      throw new AppError('Role sudah digunakan atau akun sudah ada', 409);
     }
 
     // Jika email ada, cek tidak duplikat
     if (email) {
-      await domainService.ensureEmailNotTaken(email);
-    }
-
-    // Jika username ada, cek tidak duplikat
-    if (username) {
-      const existingUser = await this.userRepo.findByUsername(username);
-      if (existingUser) {
-        throw new AppError('Username sudah digunakan', 409);
+      const existingEmail = await this.userRepo.findByEmail(email);
+      if (existingEmail) {
+        throw new AppError('Email sudah digunakan', 409);
       }
     }
 
     // Hash password menggunakan SHA-256
     const passwordHash = this.hashService.hashPassword(password);
-    
-    // Create user dengan email (optional) dan username
-    const finalEmail = email || undefined;
-    const finalUsername = username || (email ? email.split('@')[0] : 'user');
-    
-    const user = await this.userRepo.create(finalEmail || '', passwordHash, name, finalUsername);
-    return { 
-      id: user.id, 
-      email: user.email, 
-      username: user.username,
-      name: user.name 
+
+    const user = await this.userRepo.create(role, passwordHash, name, email);
+    return {
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name
     };
   }
 }

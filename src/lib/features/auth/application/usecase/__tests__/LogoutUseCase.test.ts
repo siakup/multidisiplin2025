@@ -1,11 +1,13 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LogoutUseCase } from '@/lib/features/auth/application/usecase/LogoutUseCase';
 
-const mockSessionRepo = { revokeByToken: jest.fn() };
+const mockSessionRepo = { revokeByToken: vi.fn() };
 
 describe('LogoutUseCase', () => {
   let useCase: LogoutUseCase;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     useCase = new LogoutUseCase(mockSessionRepo as any);
   });
 

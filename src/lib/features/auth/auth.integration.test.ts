@@ -3,7 +3,7 @@ import { RegisterUserUseCase } from './application/usecase/RegisterUserUseCase';
 import { LoginUseCase } from './application/usecase/LoginUseCase';
 import { RefreshTokenUseCase } from './application/usecase/RefreshTokenUseCase';
 import { LogoutUseCase } from './application/usecase/LogoutUseCase';
-import { BcryptService } from './infrastructure/adapter/BcryptService';
+import { SHA256Service } from './infrastructure/adapter/SHA256Service';
 import { PrismaUserRepository } from './infrastructure/adapter/UserRepositoryPrisma';
 import { PrismaSessionRepository } from './infrastructure/adapter/SessionRepositoryPrisma';
 import { JwtTokenService } from './infrastructure/adapter/TokenServiceJwt';
@@ -12,7 +12,7 @@ import jwt from 'jsonwebtoken';
 describe('Auth Full Integration', () => {
   let userRepo: PrismaUserRepository;
   let sessionRepo: PrismaSessionRepository;
-  let bcryptService: BcryptService;
+  let hashService: SHA256Service;
   let tokenService: JwtTokenService;
 
   let registerUseCase: RegisterUserUseCase;
@@ -25,11 +25,11 @@ describe('Auth Full Integration', () => {
 
     userRepo = new PrismaUserRepository();
     sessionRepo = new PrismaSessionRepository();
-    bcryptService = new BcryptService();
+    hashService = new SHA256Service();
     tokenService = new JwtTokenService();
 
-    registerUseCase = new RegisterUserUseCase(userRepo, bcryptService);
-    loginUseCase = new LoginUseCase(userRepo, bcryptService, sessionRepo, tokenService);
+    registerUseCase = new RegisterUserUseCase(userRepo, hashService);
+    loginUseCase = new LoginUseCase(userRepo, hashService, sessionRepo, tokenService);
     refreshUseCase = new RefreshTokenUseCase(sessionRepo, tokenService);
     logoutUseCase = new LogoutUseCase(sessionRepo);
   });
@@ -50,16 +50,18 @@ describe('Auth Full Integration', () => {
   it('register → login → refresh → logout flow', async () => {
     // 1️⃣ Register
     const user = await registerUseCase.execute({
-      email: 'test@example.com',
+      role: 'STUDENT_HOUSING',
       password: 'password',
+      email: 'test@example.com',
+      name: 'Test User'
     });
 
     expect(user).toHaveProperty('id');
-    expect(user.email).toBe('test@example.com');
+    expect(user.role).toBe('STUDENT_HOUSING');
 
     // 2️⃣ Login
     const loginResult = await loginUseCase.execute({
-      email: 'test@example.com',
+      role: 'STUDENT_HOUSING',
       password: 'password',
     });
 
@@ -91,12 +93,12 @@ describe('Auth Full Integration', () => {
 
   it('login gagal jika password salah', async () => {
     await registerUseCase.execute({
-      email: 'fail@example.com',
+      role: 'FAIL_ROLE',
       password: 'correct',
     });
 
     await expect(
-      loginUseCase.execute({ email: 'fail@example.com', password: 'wrong' })
-    ).rejects.toThrow('Invalid credentials');
+      loginUseCase.execute({ role: 'FAIL_ROLE', password: 'wrong' })
+    ).rejects.toThrow('Role atau password salah');
   });
 });

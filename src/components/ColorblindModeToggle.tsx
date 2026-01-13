@@ -14,8 +14,8 @@ export default function ColorblindModeToggle({ fixed = false }: ColorblindModeTo
     setColorblindType(isEnabled ? 'none' : 'deuteranopia');
   };
 
-  const containerClass = fixed 
-    ? "fixed top-4 right-4 z-50" 
+  const containerClass = fixed
+    ? "fixed bottom-4 right-4 z-50"
     : "relative";
 
   // Warna icon: normal = hitam, buta warna = abu-abu agak ke hijauan (#6B7280 atau #9CA3AF)
@@ -52,7 +52,7 @@ export default function ColorblindModeToggle({ fixed = false }: ColorblindModeTo
           {/* Temples (sisi kanan) */}
           <line x1="22" y1="12" x2="22" y2="11" />
         </svg>
-        
+
         {/* Badge indicator ketika mode aktif */}
         {isEnabled && (
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--color-12250f)] rounded-full border-2 border-white"></span>

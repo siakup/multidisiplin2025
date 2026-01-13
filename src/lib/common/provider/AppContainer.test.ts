@@ -1,7 +1,8 @@
+import { describe, it, expect, vi } from 'vitest';
 import { AppContainer } from './AppContainer';
 
-jest.mock('../../features/auth/AuthContainer', () => ({
-  AuthContainer: { getInstance: jest.fn(() => 'mockAuth') },
+vi.mock('../../features/auth/AuthContainer', () => ({
+  AuthContainer: { getInstance: vi.fn(() => 'mockAuth') },
 }));
 
 describe('AppContainer', () => {

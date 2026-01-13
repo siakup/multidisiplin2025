@@ -1,0 +1,262 @@
+
+Running 12 tests using 6 workers
+
+🔧 Setting up test environment...
+🔧 Setting up test environment...
+🔧 Setting up test environment...
+⚠️ Login failed: Login failed with status 401
+⚠️ Login failed: Login failed with status 401
+⚠️ Trying to register new user...
+⚠️ Login failed: Login failed with status 401
+⚠️ Trying to register new user...
+⚠️ Trying to register new user...
+📊 Page Load Time: 3.09 seconds
+  ✘   4 [chromium] › tests\e2e\kpi.spec.ts:38:5 › KPI - NFR 1.1: Page Load Speed (Maksimal 3 detik) (3.6s)
+✅ User registration successful (or already exists)
+✅ User registration successful (or already exists)
+✅ User registration successful (or already exists)
+✅ Registered and logged in as Facility management user
+❌ Gagal login setelah register. Error: Login failed with status 500
+❌ Gagal login setelah register. Error: Login failed with status 500
+🔧 Setting up test environment...
+  -   2 [chromium] › tests\e2e\kpi.spec.ts:534:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 4.1: Dukungan Deuteranopia (UI dapat dibedakan oleh pengguna mengalami buta warna)
+  -   8 [chromium] › tests\e2e\kpi.spec.ts:588:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 4.2: Indikator Visual (Notifikasi success/error harus menggunakan ikon khusus)
+🔧 Setting up test environment...
+✅ Test panel created: 1
+✅ Test environment setup complete
+  ✘   3 [chromium] › tests\e2e\auth.spec.ts:4:9 › Authentication Flow › should show login page (9.1s)
+✅ Using existing Facility management user
+⚠️ Login failed: Login failed with status 500
+⚠️ Trying to register new user...
+❌ Test NFR 1.2 FAILED: API call failed with status 404: User not found
+Response: {"error":"User not found"}
+panelId: 1, userId: 1, accessToken: exists
+   Time elapsed: 2.08 seconds
+✅ Test panel created: 2
+✅ Test environment setup complete
+✅ User registration successful (or already exists)
+✅ Registered and logged in as Facility management user
+✅ Test panel created: 3
+✅ Test environment setup complete
+📊 SQL Injection Protection: 10/20 (50.0%)
+  ✘   6 [chromium] › tests\e2e\kpi.spec.ts:403:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.2: Proteksi Input (100% terlindung dari serangan SQL Injection) (7.3s)
+Failed to delete panel 2: 405
+Failed to delete panel 1: 405
+  ✘   5 [chromium] › tests\e2e\kpi.spec.ts:268:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 1.2: Waktu Proses Simpan dan Update data (Maks 2 detik) (2.1s)
+  ✘   9 [chromium] › tests\e2e\kpi.spec.ts:949:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - FR 3.2.2: Akurasi Validasi Input (Input jumlah KWh dan tagihan tidak boleh minus, nol, decimal, atau huruf) (1.8s)
+🔧 Setting up test environment...
+🔧 Setting up test environment...
+✅ Using existing Facility management user
+⚠️ Login failed: Login failed with status 500
+⚠️ Trying to register new user...
+✅ Test panel created: 4
+✅ Test environment setup complete
+✅ User registration successful (or already exists)
+✅ Registered and logged in as Facility management user
+✅ Test panel created: 5
+✅ Test environment setup complete
+📊 Password Hash (SHA256): b55c8792d1ce458e...
+✅ KPI - NFR 2.1 PASS: Password menggunakan SHA256 hashing
+Failed to delete panel 4: 405
+  ✓  11 [chromium] › tests\e2e\kpi.spec.ts:341:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.1: Password pengguna menggunakan Metode Hashing SHA256 (311ms)
+🔎 Input data: { bulan: [32m'2026-01'[39m, kwh: [32m'97559'[39m, tagihan: [32m'172409'[39m }
+🔎 No select element found, trying dropdown
+🔎 Found panel dropdown, clicking...
+🔎 Found 7 panel options in dropdown
+🔎 Option 0: Pilih nama panel gedung
+🔎 Option 1: KPI Test Panel 1767686196239
+🔎 Option 2: KPI Test Panel 1767686195976
+🔎 Found dropdown option, clicking on second option (skip placeholder)...
+🔎 Panel dropdown text after selection: "KPI Test Panel 1767686196239"
+✅ Panel berhasil dipilih
+🔎 Form values before submit: { bulan: [32m'2026-01'[39m, kwh: [32m'97559'[39m, tagihan: [32m'172409'[39m }
+🔎 Menekan tombol submit...
+❌ Submit form gagal! Notifikasi error: 
+❌ Submit form gagal! Notifikasi error: 
+❌ Submit form gagal! Notifikasi error: 
+Failed to delete panel 3: 405
+  ✘   7 [chromium] › tests\e2e\kpi.spec.ts:711:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 3.1: Zero Data Loss (Tidak ada data hilang jika sistem gagal saat proses input/edit) (13.8s)
+🔧 Setting up test environment...
+✅ Using existing Facility management user
+  ✘   1 [chromium] › tests\e2e\auth.spec.ts:11:9 › Authentication Flow › should fail login with invalid credentials (30.1s)
+✅ Test panel created: 6
+✅ Test environment setup complete
+Failed to delete panel 5: 405
+  ✘  10 [chromium] › tests\e2e\kpi.spec.ts:469:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.4: Manajemen Sesi (Logout otomatis setelah 5 menit tanpa aktivitas) (21.5s)
+Failed to delete panel 6: 405
+  ✘  12 [chromium] › tests\e2e\kpi.spec.ts:889:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - FR 3.2.1: Akurasi Validasi Penyimpanan (Sistem menolak simpan jika ada field kosong dengan notifikasi spesifik) (30.1s)
+
+
+  1) [chromium] › tests\e2e\auth.spec.ts:4:9 › Authentication Flow › should show login page ────────
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveTitle[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/Login/i[39m
+    Received string:  [31m"Campus Facility Management System"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveTitle" with timeout 5000ms[22m
+    [2m    9 × unexpected value "Campus Facility Management System"[22m
+
+
+       5 |         await page.goto('/login');
+       6 |         // Check for role input or heading
+    >  7 |         await expect(page).toHaveTitle(/Login/i);
+         |                            ^
+       8 |         await expect(page.locator('input[name="role"]')).toBeVisible();
+       9 |     });
+      10 |
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\auth.spec.ts:7:28
+
+    Error Context: test-results\auth-Authentication-Flow-should-show-login-page-chromium\error-context.md
+
+  2) [chromium] › tests\e2e\auth.spec.ts:11:9 › Authentication Flow › should fail login with invalid credentials 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.fill: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('input[name="role"]')[22m
+
+
+      11 |     test('should fail login with invalid credentials', async ({ page }) => {
+      12 |         await page.goto('/login');
+    > 13 |         await page.fill('input[name="role"]', 'WRONG_ROLE');
+         |                    ^
+      14 |         await page.fill('input[name="password"]', 'wrongpassword');
+      15 |         await page.click('button[type="submit"]');
+      16 |
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\auth.spec.ts:13:20
+
+    Error Context: test-results\auth-Authentication-Flow-s-101a9-in-with-invalid-credentials-chromium\error-context.md
+
+  3) [chromium] › tests\e2e\kpi.spec.ts:38:5 › KPI - NFR 1.1: Page Load Speed (Maksimal 3 detik) ───
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeLessThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: <= [32m3[39m
+    Received:    [31m3.09[39m
+
+      79 |
+      80 |     // KPI Target: Maksimal 3 detik
+    > 81 |     expect(loadTimeSeconds).toBeLessThanOrEqual(3);
+         |                             ^
+      82 |
+      83 |     console.log('✅ KPI - NFR 1.1 PASS: Page load time <= 3 seconds');
+      84 | });
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:81:29
+
+    Error Context: test-results\kpi-KPI---NFR-1-1-Page-Load-Speed-Maksimal-3-detik--chromium\error-context.md
+
+  4) [chromium] › tests\e2e\kpi.spec.ts:268:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 1.2: Waktu Proses Simpan dan Update data (Maks 2 detik) 
+
+    Error: API call failed with status 404: User not found
+    Response: {"error":"User not found"}
+    panelId: 1, userId: 1, accessToken: exists
+
+      304 |                 const errorData = await getJsonResponse(response).catch(() => ({}));
+      305 |                 const errorMsg = (errorData as any)?.error || `HTTP ${response.status()}`;
+    > 306 |                 throw new Error(
+          |                       ^
+      307 |                     `API call failed with status ${response.status()}: ${errorMsg}\n` +
+      308 |                     `Response: ${JSON.stringify(errorData)}\n` +
+      309 |                     `panelId: ${panelId}, userId: ${userId}, accessToken: ${accessToken ? 'exists' : 'missing'}`
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:306:23
+
+  5) [chromium] › tests\e2e\kpi.spec.ts:403:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.2: Proteksi Input (100% terlindung dari serangan SQL Injection) 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+    Expected: [32m100[39m
+    Received: [31m50[39m
+
+      462 |
+      463 |         // KPI Target: 100% terlindung dari SQL Injection
+    > 464 |         expect(protectionRate).toBe(100);
+          |                                ^
+      465 |
+      466 |         console.log('✅ KPI - NFR 2.2 PASS: 100% terlindung dari SQL Injection');
+      467 |     });
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:464:32
+
+  6) [chromium] › tests\e2e\kpi.spec.ts:469:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.4: Manajemen Sesi (Logout otomatis setelah 5 menit tanpa aktivitas) 
+
+    Error: page.evaluate: Execution context was destroyed, most likely because of a navigation
+
+      518 |         // Verify bahwa user sudah di-logout (token dihapus atau redirect ke login)
+      519 |         const currentUrl = page.url();
+    > 520 |         const tokenAfter = await page.evaluate(() => localStorage.getItem('accessToken'));
+          |                                       ^
+      521 |
+      522 |         // Sistem harus logout otomatis (token dihapus atau redirect ke login)
+      523 |         const isLoggedOut = !tokenAfter || currentUrl.includes('/login');
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:520:39
+
+    Error Context: test-results\kpi-📊-KPI-Validation-Test-9a17a-ah-5-menit-tanpa-aktivitas--chromium\error-context.md
+
+  7) [chromium] › tests\e2e\kpi.spec.ts:711:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 3.1: Zero Data Loss (Tidak ada data hilang jika sistem gagal saat proses input/edit) 
+
+    Error: Form submit gagal: 
+    Saran debug: cek validasi input di UI dan backend, pastikan semua field terisi dan format benar.
+
+      833 |                     notifText = await notifLocator.first().textContent() || '';
+      834 |                     console.error('❌ Submit form gagal! Notifikasi error:', notifText);
+    > 835 |                     throw new Error('Form submit gagal: ' + notifText + '\nSaran debug: cek validasi input di UI dan backend, pastikan semua field terisi dan format benar.');
+          |                           ^
+      836 |                 }
+      837 |             } catch (err) {
+      838 |                 if (i === 2) throw err;
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:835:27
+
+    Error Context: test-results\kpi-📊-KPI-Validation-Test-99a37-gal-saat-proses-input-edit--chromium\error-context.md
+
+  8) [chromium] › tests\e2e\kpi.spec.ts:889:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - FR 3.2.1: Akurasi Validasi Penyimpanan (Sistem menolak simpan jika ada field kosong dengan notifikasi spesifik) 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.reload: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for navigation until "load"[22m
+    [2m    - navigated to "http://localhost:3000/electricity-bills/input"[22m
+
+
+      917 |         // Test 2: Submit dengan beberapa field kosong (bulan kosong)
+      918 |         // Reload halaman untuk reset form
+    > 919 |         await page.reload({ waitUntil: 'load' });
+          |                    ^
+      920 |         await page.waitForSelector('input[name="bulan"]', { timeout: 10000 });
+      921 |
+      922 |         await page.fill('input[name="jumlahKwh"]', '100');
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:919:20
+
+    Error Context: test-results\kpi-📊-KPI-Validation-Test-49b3f-dengan-notifikasi-spesifik--chromium\error-context.md
+
+  9) [chromium] › tests\e2e\kpi.spec.ts:949:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - FR 3.2.2: Akurasi Validasi Input (Input jumlah KWh dan tagihan tidak boleh minus, nol, decimal, atau huruf) 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoContain[2m([22m[32mexpected[39m[2m) // indexOf[22m
+
+    Expected value: [32m500[39m
+    Received array: [31m[400, 422][39m
+
+      971 |         });
+      972 |
+    > 973 |         expect([400, 422]).toContain(negativeResponse.status());
+          |                            ^
+      974 |         const negativeData = await getJsonResponse(negativeResponse);
+      975 |         expect(negativeData).toHaveProperty('error');
+      976 |
+        at C:\Kuliah\Semester 7\PM\tubes\multidisiplin2025\tests\e2e\kpi.spec.ts:973:28
+
+  9 failed
+    [chromium] › tests\e2e\auth.spec.ts:4:9 › Authentication Flow › should show login page ─────────
+    [chromium] › tests\e2e\auth.spec.ts:11:9 › Authentication Flow › should fail login with invalid credentials 
+    [chromium] › tests\e2e\kpi.spec.ts:38:5 › KPI - NFR 1.1: Page Load Speed (Maksimal 3 detik) ────
+    [chromium] › tests\e2e\kpi.spec.ts:268:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 1.2: Waktu Proses Simpan dan Update data (Maks 2 detik) 
+    [chromium] › tests\e2e\kpi.spec.ts:403:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.2: Proteksi Input (100% terlindung dari serangan SQL Injection) 
+    [chromium] › tests\e2e\kpi.spec.ts:469:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 2.4: Manajemen Sesi (Logout otomatis setelah 5 menit tanpa aktivitas) 
+    [chromium] › tests\e2e\kpi.spec.ts:711:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - NFR 3.1: Zero Data Loss (Tidak ada data hilang jika sistem gagal saat proses input/edit) 
+    [chromium] › tests\e2e\kpi.spec.ts:889:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - FR 3.2.1: Akurasi Validasi Penyimpanan (Sistem menolak simpan jika ada field kosong dengan notifikasi spesifik) 
+    [chromium] › tests\e2e\kpi.spec.ts:949:9 › 📊 KPI Validation Tests (9 Test Cases - Auth Required) › KPI - FR 3.2.2: Akurasi Validasi Input (Input jumlah KWh dan tagihan tidak boleh minus, nol, decimal, atau huruf) 
+  2 skipped
+  1 passed (1.2m)

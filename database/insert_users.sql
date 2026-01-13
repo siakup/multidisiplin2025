@@ -14,7 +14,7 @@
 -- Insert User: Facility management
 -- Password: 1234 (akan di-hash otomatis dengan SHA-256 saat insert)
 INSERT INTO "User" ("Username", "Password", "Role", "name") 
-VALUES ('Facility management', sha256_hash('1234'), 'USER', 'Facility Management')
+VALUES ('Facility Management', sha256_hash('1234'), 'USER', 'Facility Management')
 ON CONFLICT ("Username") DO UPDATE 
 SET "Password" = EXCLUDED."Password",
     "Role" = EXCLUDED."Role",
@@ -23,11 +23,11 @@ SET "Password" = EXCLUDED."Password",
 -- Insert User: student hausing
 -- Password: 1234 (akan di-hash otomatis dengan SHA-256 saat insert)
 INSERT INTO "User" ("Username", "Password", "Role", "name") 
-VALUES ('student hausing', sha256_hash('1234'), 'USER', 'Student Housing')
+VALUES ('Student Housing', sha256_hash('1234'), 'USER', 'Student Housing')
 ON CONFLICT ("Username") DO UPDATE 
 SET "Password" = EXCLUDED."Password",
     "Role" = EXCLUDED."Role",
     "name" = EXCLUDED."name";
 
 -- Verify inserted users
-SELECT "id_User", "Username", "Role", "name" FROM "User" WHERE "Username" IN ('Facility management', 'student hausing');
+SELECT "id_User", "Username", "Role", "name" FROM "User" WHERE "Username" IN ('Facility Management', 'Student Housing');

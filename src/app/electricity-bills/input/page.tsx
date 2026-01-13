@@ -70,7 +70,7 @@ export default function ElectricityBillsInputPage() {
     e.preventDefault();
     setLoading(true);
     setErrorMessage('');
-    
+
     try {
       // Validasi field kosong - termasuk panel baru jika dipilih
       if (!formData.bulan || !formData.jumlahKwh || !formData.tagihanListrik) {
@@ -106,20 +106,24 @@ export default function ElectricityBillsInputPage() {
       // Validasi input angka
       const kwhValue = parseFloat(formData.jumlahKwh);
       const tagihanValue = parseFloat(formData.tagihanListrik);
-      
+
       if (isNaN(kwhValue) || kwhValue <= 0) {
         throw new Error('Jumlah kWh harus berupa angka yang valid');
       }
-      
+
       if (isNaN(tagihanValue) || tagihanValue <= 0) {
         throw new Error('Tagihan listrik harus berupa angka yang valid');
       }
 
-      const userId = 1; 
+      const storedUserId = localStorage.getItem('userId');
+      if (!storedUserId) {
+        throw new Error('User ID tidak ditemukan. Silahkan login ulang.');
+      }
+      const userId = parseInt(storedUserId, 10);
 
       // Submit data ke API
       const billingMonth = new Date(formData.bulan + '-01');
-      
+
       await api.post('/electricity-bills', {
         panelId,
         userId,
@@ -266,21 +270,21 @@ export default function ElectricityBillsInputPage() {
                 strokeWidth={2}
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
-            </svg>  
+            </svg>
           </Link>
         </div>
 
         {/* Page Title */}
-        <h1 className="font-bold text-black text-center mb-12" style={{fontSize: '48px'}}>
+        <h1 className="font-bold text-black text-center mb-12" style={{ fontSize: '48px' }}>
           Masukkan Data Tagihan
         </h1>
 
         {/* Form */}
         <div className="bg-white mx-auto flex justify-center">
-          <form onSubmit={handleSubmit} style={{gap: '30px', display: 'flex', flexDirection: 'column'}}>
+          <form onSubmit={handleSubmit} style={{ gap: '30px', display: 'flex', flexDirection: 'column' }}>
             {/* Nama Panel */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Nama Panel :
               </label>
               <div className="relative flex-1">
@@ -313,10 +317,10 @@ export default function ElectricityBillsInputPage() {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-                
+
                 {/* Custom Dropdown */}
                 {showNamaPanelDropdown && (
-                  <div 
+                  <div
                     className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto"
                     style={{ borderColor: '#646F61' }}
                   >
@@ -358,7 +362,7 @@ export default function ElectricityBillsInputPage() {
             {/* Panel Baru Input - Muncul ketika memilih "Tambah Nama Panel Gedung" */}
             {showPanelBaruInput && (
               <div className="flex items-center gap-4 justify-center">
-                <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+                <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                   Panel Baru :
                 </label>
                 <div className="flex-1">
@@ -388,7 +392,7 @@ export default function ElectricityBillsInputPage() {
 
             {/* Bulan */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Bulan :
               </label>
               <div className="relative flex-1">
@@ -413,7 +417,7 @@ export default function ElectricityBillsInputPage() {
 
             {/* Jumlah kWh */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Jumlah kWh :
               </label>
               <div className="flex-1">
@@ -453,7 +457,7 @@ export default function ElectricityBillsInputPage() {
 
             {/* Tagihan Listrik */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Tagihan Listrik :
               </label>
               <div className="flex-1">
@@ -493,7 +497,7 @@ export default function ElectricityBillsInputPage() {
 
 
             {/* Submit Button */}
-            <div className="flex justify-center" style={{marginTop: '91px'}}>
+            <div className="flex justify-center" style={{ marginTop: '91px' }}>
               <button
                 type="submit"
                 disabled={loading}
@@ -518,13 +522,13 @@ export default function ElectricityBillsInputPage() {
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Background Blur Overlay */}
-          <div 
+          <div
             className="absolute inset-0 backdrop-blur-md bg-white/20"
             onClick={handleCloseSuccessModal}
           ></div>
-          
+
           {/* Modal Content */}
-          <div 
+          <div
             className="relative bg-white rounded-lg"
             style={{
               width: '408px',
@@ -548,7 +552,7 @@ export default function ElectricityBillsInputPage() {
 
             {/* Success Icon */}
             <div className="flex justify-center mb-4">
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
                   backgroundColor: '#5EA127',
@@ -575,13 +579,13 @@ export default function ElectricityBillsInputPage() {
       {showErrorModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Background Blur Overlay */}
-          <div 
+          <div
             className="absolute inset-0 backdrop-blur-md bg-white/20"
             onClick={handleCloseErrorModal}
           ></div>
-          
+
           {/* Modal Content */}
-          <div 
+          <div
             className="relative bg-white rounded-lg p-8"
             style={{
               width: '408px',
@@ -601,7 +605,7 @@ export default function ElectricityBillsInputPage() {
 
             {/* Error Icon */}
             <div className="flex justify-center mb-6">
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
                   backgroundColor: '#ef4444',
@@ -629,3 +633,4 @@ export default function ElectricityBillsInputPage() {
     </div>
   );
 }
+

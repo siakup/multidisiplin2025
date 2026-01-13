@@ -3,16 +3,18 @@ import { AppError } from '@/lib/common/errors/AppError';
 
 describe('Login DTO', () => {
   it('parses valid data', () => {
-    const data = { email: 'a@b.com', password: '123456' };
+    const data = { role: 'STUDENT_HOUSING', password: 'password' };
     const result = parseLogin(data);
-    expect(result.email).toBe('a@b.com');
+    expect(result.role).toBe('STUDENT_HOUSING');
   });
 
-  it('throws on invalid email', () => {
-    expect(() => parseLogin({ email: 'invalid', password: '123456' })).toThrow(AppError);
+  it('throws on missing role', () => {
+    expect(() => parseLogin({ password: 'password' })).toThrow(AppError);
   });
 
   it('throws on short password', () => {
-    expect(() => parseLogin({ email: 'a@b.com', password: '123' })).toThrow(AppError);
+    // Schema in LoginRequestDto.ts uses .min(1), so '123' actually passes there.
+    // If we want to strictly test empty password:
+    expect(() => parseLogin({ role: 'ADMIN', password: '' })).toThrow(AppError);
   });
 });

@@ -72,6 +72,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(result);
   } catch (err: any) {
+    try {
+      const fs = require('fs');
+      fs.appendFileSync('login-debug.log', `[${new Date().toISOString()}] Login Error: ${err.message}\n${err.stack}\n---\n`);
+    } catch (logErr) {
+      console.error('Failed to write log:', logErr);
+    }
     return NextResponse.json({ error: err.message }, { status: err.statusCode || 500 });
   }
 }
