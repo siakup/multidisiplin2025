@@ -2,6 +2,7 @@
 
 import { Text } from '@/components/Text';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { api } from '@/lib/common/utils/api';
@@ -32,7 +33,12 @@ export default function DashboardPage() {
     fetchMetabaseUrls();
 
     // Set default tab based on user role
-    const role = localStorage.getItem('userRole');
+    let role = localStorage.getItem('userRole');
+    // Sanitize role
+    if (role) {
+      role = role.replace(/^"|"$/g, '').trim();
+      if (role === 'null' || role === 'undefined' || role === '') role = null;
+    }
     setUserRole(role);
     const studentRoles = ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'];
     const facilityRoles = ['facility management', 'FACILITY_MANAGEMENT', 'facility_management'];
@@ -159,15 +165,36 @@ export default function DashboardPage() {
     doc.save(`student_housing_report_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  // Check if user is Student Housing
-  const isStudentHousing = userRole && ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'].some(
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
+
+  // Check if user is Student Housing (ignored if on landing page)
+  const studentRoles = ['student housing', 'student hausing', 'STUDENT_HOUSING', 'student_housing'];
+  const isStudentHousingUser = !isLandingPage && userRole && studentRoles.some(
     r => r.toLowerCase() === userRole.toLowerCase()
   );
+
+  // Check if user is Facility Management (ignored if on landing page)
+  const facilityRoles = ['facility management', 'FACILITY_MANAGEMENT', 'facility_management'];
+  const isFacilityManagementUser = !isLandingPage && userRole && facilityRoles.some(
+    r => r.toLowerCase() === userRole.toLowerCase()
+  );
+
+  // Guest if no role OR if on landing page (forced guest mode)
+  const isGuest = !userRole || isLandingPage;
+
+  // Visibility Logic
+  const showFacilityButton = isGuest || isFacilityManagementUser;
+  // Show Student Housing button if Guest OR Student Housing User
+  const showStudentButton = isGuest || isStudentHousingUser;
+
+  // Export only for logged-in Student Housing users (and NOT on landing page)
+  const showExport = isStudentHousingUser;
 
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 className="font-bold text-black text-3xl mb-8">Dashboard Monitoring & Analisis</h1>
+        <h1 className="font-bold text-black text-3xl mb-8">Dashboard Emisi Carbon Universitas Pertamina</h1>
 
         {loading && !dormRecords.length ? (
           <p className="text-gray-600">Memuat data...</p>
@@ -175,37 +202,36 @@ export default function DashboardPage() {
           <div className="space-y-8">
             {/* Dashboard Switcher Buttons */}
             <div className="flex flex-wrap gap-4 mb-6">
-              {/* Show Facility Management button only if explicitly allowed or no specific role restriction found (fallback) */}
-              {(activeTab === 'facility-management' || !isStudentHousing) && (
+              {showFacilityButton && (
                 <button
                   onClick={() => setActiveTab('facility-management')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'facility-management'
-                    ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
+                    ? 'bg-brand-primary text-white border-brand-primary shadow-lg transform scale-105'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary hover:text-brand-primary'
                     }`}
                 >
                   Facility Management
                 </button>
               )}
 
-              {(activeTab === 'student-housing' || isStudentHousing) && (
+              {showStudentButton && (
                 <button
                   onClick={() => setActiveTab('student-housing')}
                   className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 ${activeTab === 'student-housing'
-                    ? 'bg-[#5EA127] text-white border-[#5EA127] shadow-lg transform scale-105'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-[#5EA127] hover:text-[#5EA127]'
+                    ? 'bg-brand-primary text-white border-brand-primary shadow-lg transform scale-105'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-brand-primary hover:text-brand-primary'
                     }`}
                 >
                   Student Housing
                 </button>
               )}
 
-              {/* Export Buttons - Only for Student Housing */}
-              {isStudentHousing && activeTab === 'student-housing' && (
+              {/* Export Buttons - Only for logged-in Student Housing users */}
+              {showExport && activeTab === 'student-housing' && (
                 <div className="flex gap-3">
                   <button
                     onClick={handleExportCSV}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm flex items-center gap-2"
+                    className="px-4 py-2 bg-brand-primary text-white rounded-lg hover:opacity-90 transition-colors font-medium shadow-sm flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -214,7 +240,7 @@ export default function DashboardPage() {
                   </button>
                   <button
                     onClick={handleExportPDF}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium shadow-sm flex items-center gap-2"
+                    className="px-4 py-2 bg-brand-danger text-white rounded-lg hover:opacity-90 transition-colors font-medium shadow-sm flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />

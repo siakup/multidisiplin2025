@@ -501,15 +501,12 @@ export default function ElectricityBillsInputPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60"
+                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60 bg-brand-text-primary hover:bg-brand-secondary"
                 style={{
-                  backgroundColor: '#172813',
                   width: '500px',
                   height: '45px',
                   fontSize: '20px'
                 }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
               >
                 {loading ? 'Menyimpan...' : 'Simpan Data'}
               </button>

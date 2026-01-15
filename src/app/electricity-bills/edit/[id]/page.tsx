@@ -91,24 +91,24 @@ export default function ElectricityBillsEditPage() {
 
   const fetchBill = async () => {
     if (!billId) return;
-    
+
     try {
       setBillLoading(true);
       const bill = await api.get<ElectricityBill>(`/electricity-bills/${billId}`);
-      
+
       // Format billingMonth untuk input date (YYYY-MM)
       const billingDate = new Date(bill.billingMonth);
       const year = billingDate.getFullYear();
       const month = String(billingDate.getMonth() + 1).padStart(2, '0');
-      
+
       // Handle Decimal type from Prisma (might be string or number)
-      const kwhValue = typeof bill.kwhUse === 'string' 
-        ? parseFloat(bill.kwhUse) 
+      const kwhValue = typeof bill.kwhUse === 'string'
+        ? parseFloat(bill.kwhUse)
         : Number(bill.kwhUse);
       const totalBillsValue = typeof bill.totalBills === 'string'
         ? parseFloat(bill.totalBills)
         : Number(bill.totalBills);
-      
+
       setFormData({
         namaPanel: bill.panel?.namePanel || '',
         panelId: bill.panel?.id || 0,
@@ -136,10 +136,10 @@ export default function ElectricityBillsEditPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!billId) return;
-    
+
     setLoading(true);
     setErrorMessage('');
-    
+
     try {
       // Validasi field kosong
       if (!formData.bulan || !formData.jumlahKwh || !formData.tagihanListrik) {
@@ -154,18 +154,18 @@ export default function ElectricityBillsEditPage() {
       // Validasi input angka
       const kwhValue = parseFloat(formData.jumlahKwh);
       const tagihanValue = parseFloat(formData.tagihanListrik);
-      
+
       if (isNaN(kwhValue) || kwhValue <= 0) {
         throw new Error('Jumlah kWh harus berupa angka yang valid');
       }
-      
+
       if (isNaN(tagihanValue) || tagihanValue <= 0) {
         throw new Error('Tagihan listrik harus berupa angka yang valid');
       }
 
       // Update data ke API
       const billingMonth = new Date(formData.bulan + '-01');
-      
+
       await api.put(`/electricity-bills/${billId}`, {
         panelId: formData.panelId,
         billingMonth: billingMonth.toISOString(),
@@ -174,6 +174,11 @@ export default function ElectricityBillsEditPage() {
       });
 
       setShowSuccessModal(true);
+
+      // Auto redirect after 1.5 seconds
+      setTimeout(() => {
+        router.push('/electricity-bills');
+      }, 1500);
     } catch (err: any) {
       setErrorMessage(err.message || 'Gagal menyimpan data');
       setShowErrorModal(true);
@@ -204,7 +209,7 @@ export default function ElectricityBillsEditPage() {
   if (billLoading || !billId) {
     return (
       <div className="min-h-screen bg-white font-sans flex items-center justify-center">
-        <p className="text-gray-600" style={{fontSize: '20px'}}>Memuat data...</p>
+        <p className="text-gray-600" style={{ fontSize: '20px' }}>Memuat data...</p>
       </div>
     );
   }
@@ -300,21 +305,21 @@ export default function ElectricityBillsEditPage() {
                 strokeWidth={2}
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
-            </svg>  
+            </svg>
           </Link>
         </div>
 
         {/* Page Title */}
-        <h1 className="font-bold text-black text-center mb-12" style={{fontSize: '48px'}}>
+        <h1 className="font-bold text-black text-center mb-12" style={{ fontSize: '48px' }}>
           Masukkan Data Tagihan
         </h1>
 
         {/* Form */}
         <div className="bg-white mx-auto flex justify-center">
-          <form onSubmit={handleSubmit} style={{gap: '30px', display: 'flex', flexDirection: 'column'}}>
+          <form onSubmit={handleSubmit} style={{ gap: '30px', display: 'flex', flexDirection: 'column' }}>
             {/* Nama Panel */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Nama Panel :
               </label>
               <div className="relative flex-1">
@@ -347,10 +352,10 @@ export default function ElectricityBillsEditPage() {
                     d="M19 9l-7 7-7-7"
                   />
                 </svg>
-                
+
                 {/* Custom Dropdown */}
                 {showNamaPanelDropdown && (
-                  <div 
+                  <div
                     className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto"
                     style={{ borderColor: '#646F61' }}
                   >
@@ -377,7 +382,7 @@ export default function ElectricityBillsEditPage() {
 
             {/* Bulan */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Bulan :
               </label>
               <div className="relative flex-1">
@@ -402,7 +407,7 @@ export default function ElectricityBillsEditPage() {
 
             {/* Jumlah kWh */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Jumlah kWh :
               </label>
               <div className="flex-1">
@@ -431,7 +436,7 @@ export default function ElectricityBillsEditPage() {
 
             {/* Tagihan Listrik */}
             <div className="flex items-center gap-4 justify-center">
-              <label className="font-medium text-gray-900 flex-shrink-0" style={{fontSize: '20px', width: '200px'}}>
+              <label className="font-medium text-gray-900 flex-shrink-0" style={{ fontSize: '20px', width: '200px' }}>
                 Tagihan Listrik :
               </label>
               <div className="flex-1">
@@ -459,19 +464,16 @@ export default function ElectricityBillsEditPage() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-center" style={{marginTop: '91px'}}>
+            <div className="flex justify-center" style={{ marginTop: '91px' }}>
               <button
                 type="submit"
                 disabled={loading}
-                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60"
+                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60 bg-brand-text-primary hover:bg-brand-secondary"
                 style={{
-                  backgroundColor: '#172813',
                   width: '500px',
                   height: '45px',
                   fontSize: '20px'
                 }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#1a2f15'; }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#172813'; }}
               >
                 {loading ? 'Menyimpan...' : 'Simpan Data'}
               </button>
@@ -484,13 +486,13 @@ export default function ElectricityBillsEditPage() {
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Background Blur Overlay */}
-          <div 
+          <div
             className="absolute inset-0 backdrop-blur-md bg-white/20"
             onClick={handleCloseSuccessModal}
           ></div>
-          
+
           {/* Modal Content */}
-          <div 
+          <div
             className="relative bg-white rounded-lg"
             style={{
               width: '408px',
@@ -514,7 +516,7 @@ export default function ElectricityBillsEditPage() {
 
             {/* Success Icon */}
             <div className="flex justify-center mb-4">
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
                   backgroundColor: '#5EA127',
@@ -541,13 +543,13 @@ export default function ElectricityBillsEditPage() {
       {showErrorModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Background Blur Overlay */}
-          <div 
+          <div
             className="absolute inset-0 backdrop-blur-md bg-white/20"
             onClick={handleCloseErrorModal}
           ></div>
-          
+
           {/* Modal Content */}
-          <div 
+          <div
             className="relative bg-white rounded-lg p-8"
             style={{
               width: '408px',
@@ -567,7 +569,7 @@ export default function ElectricityBillsEditPage() {
 
             {/* Error Icon */}
             <div className="flex justify-center mb-6">
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
                   backgroundColor: '#ef4444',

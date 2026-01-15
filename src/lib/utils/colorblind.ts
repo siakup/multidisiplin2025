@@ -21,6 +21,10 @@ const COLOR_MAPPING: Record<string, { normal: string; deuteranopia: string }> = 
   '#12250F': { normal: '#12250F', deuteranopia: '#1D1C19' },
   '#1a2f15': { normal: '#1a2f15', deuteranopia: '#1D1C19' },
   '#6CB33F': { normal: '#6CB33F', deuteranopia: '#77724B' },
+  // Facility Management mappings
+  '#F59E0B': { normal: '#F59E0B', deuteranopia: '#2563EB' }, // Edit button (Orange -> Blue)
+  '#EF4444': { normal: '#EF4444', deuteranopia: '#1F2937' }, // Delete button (Red -> Dark Gray)
+  '#93C06E': { normal: '#93C06E', deuteranopia: '#172813' }, // Table Header (Light Green -> Dark Green)
 };
 
 /**
@@ -43,11 +47,11 @@ export function getColorVariable(hexColor: string): string {
 export function getColorForMode(hexColor: string, colorblindType: 'none' | 'deuteranopia' = 'none'): string {
   const normalizedColor = hexColor.toUpperCase();
   const mapping = COLOR_MAPPING[normalizedColor];
-  
+
   if (!mapping) {
     return hexColor; // Return warna asli jika tidak ada mapping
   }
-  
+
   return colorblindType === 'deuteranopia' ? mapping.deuteranopia : mapping.normal;
 }
 

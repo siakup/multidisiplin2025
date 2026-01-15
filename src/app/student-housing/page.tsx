@@ -124,14 +124,8 @@ export default function StudentHousingPage() {
         <div className="flex justify-end mb-4">
           <Link
             href="/student-housing/input"
-            className="inline-flex items-center space-x-2 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200"
-            style={{ backgroundColor: '#5EA127', fontSize: '20px' }}
-            onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
-              e.currentTarget.style.backgroundColor = '#6bb52d';
-            }}
-            onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
-              e.currentTarget.style.backgroundColor = '#5EA127';
-            }}
+            className="inline-flex items-center space-x-2 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 bg-brand-primary hover:bg-brand-secondary"
+            style={{ fontSize: '20px' }}
           >
             <span>Tambah Data</span>
             <svg
@@ -154,14 +148,10 @@ export default function StudentHousingPage() {
         {/* Data Table */}
         <div className="flex justify-center" style={{ marginTop: '39px' }}>
           <div
-            className="bg-white rounded-lg overflow-hidden"
-            style={{
-              width: 'calc(170px + 17px + 170px + 532px + 210px)',
-              border: '1px solid #345915',
-            }}
+            className="bg-white rounded-lg overflow-hidden border border-brand-secondary"
           >
             <table className="min-w-full divide-y divide-gray-200">
-              <thead style={{ backgroundColor: '#345915' }}>
+              <thead className="bg-brand-secondary">
                 <tr>
                   <th
                     className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
