@@ -207,6 +207,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Force recompile
   try {
     const { id } = await params;
     const billId = parseInt(id, 10);

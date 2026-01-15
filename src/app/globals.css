@@ -3,7 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  
+
   /* Color variables untuk mode normal */
   --color-eff6e9: #EFF6E9;
   --color-b9d6a1: #B9D6A1;
@@ -17,6 +17,11 @@
   --color-12250f: #12250F;
   --color-1a2f15: #1a2f15;
   --color-6cb33f: #6CB33F;
+
+  /* Facility Management specific */
+  --color-ef4444: #EF4444;
+  --color-f59e0b: #F59E0B;
+  --color-93c06e: #93C06E;
 }
 
 /* Mode Deuteranopia */
@@ -33,12 +38,25 @@ html.colorblind-deuteranopia {
   --color-12250f: #1D1C19;
   --color-1a2f15: #1D1C19;
   --color-6cb33f: #77724B;
+
+  /* Facility Management specific */
+  --color-ef4444: #1F2937;
+  --color-f59e0b: #2563EB;
+  --color-93c06e: #172813;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-poppins);
+
+  /* Semantic Brand Colors */
+  --color-brand-primary: var(--color-5ea127);
+  --color-brand-secondary: var(--color-345915);
+  --color-brand-accent: var(--color-b8ff80);
+  --color-brand-danger: var(--color-ef4444);
+  --color-brand-warning: var(--color-f59e0b);
+  --color-brand-text-primary: var(--color-172813);
 }
 
 /* Dark mode disabled - always use light theme */
@@ -69,6 +87,6 @@ input[type='password']::-webkit-credentials-auto-fill-button {
 
 /* Custom focus ring menggunakan CSS variables */
 .focus-ring-colorblind:focus {
-  --tw-ring-color: var(--color-12250f);
+  --tw-ring-color: var(--color-brand-text-primary);
   --tw-ring-opacity: 1;
 }

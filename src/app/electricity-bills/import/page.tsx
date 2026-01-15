@@ -40,7 +40,7 @@ export default function ImportDataPage() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setSelectedFile(e.dataTransfer.files[0]);
       console.log('File dropped:', e.dataTransfer.files[0]);
@@ -64,17 +64,17 @@ export default function ImportDataPage() {
   const parseCSV = (text: string): string[][] => {
     const rows: string[][] = [];
     const lines = text.split('\n');
-    
+
     for (const line of lines) {
       if (line.trim()) {
         // Simple CSV parsing (handles quoted fields)
         const row: string[] = [];
         let current = '';
         let inQuotes = false;
-        
+
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
-          
+
           if (char === '"') {
             inQuotes = !inQuotes;
           } else if (char === ',' && !inQuotes) {
@@ -88,7 +88,7 @@ export default function ImportDataPage() {
         rows.push(row);
       }
     }
-    
+
     return rows;
   };
 
@@ -129,7 +129,7 @@ export default function ImportDataPage() {
       // Process each row
       for (let i = 0; i < dataRows.length; i++) {
         const row = dataRows[i];
-        
+
         if (row.length < 4) {
           errors.push(`Baris ${i + 2}: Data tidak lengkap (minimal 4 kolom: Nama Panel, Bulan, kWh, Jumlah Tagihan)`);
           continue;
@@ -170,7 +170,12 @@ export default function ImportDataPage() {
 
           // Create bill
           const billingMonth = new Date(bulan + '-01');
-          const userId = 1; // TODO: Get from auth context
+
+          const storedUserId = localStorage.getItem('userId');
+          if (!storedUserId) {
+            throw new Error('User ID tidak ditemukan. Silahkan login ulang.');
+          }
+          const userId = parseInt(storedUserId, 10);
 
           await api.post('/electricity-bills', {
             panelId,
@@ -210,28 +215,28 @@ export default function ImportDataPage() {
   const handleDownloadTemplate = () => {
     // Create CSV template
     const headers = ['Nama Panel', 'Bulan (YYYY-MM)', 'kWh', 'Jumlah Tagihan'];
-    const exampleRow = ['GL 01', '2024-01', '1500.50', '2500000'];
-    
+    const exampleRow = ['Modular 01', '2024-01', '15005', '2500000'];
+
     const csvContent = [
       headers.join(','),
       exampleRow.join(','),
-      'GL 02,2024-02,2000.00,3000000'
+      'GL 02,2024-02,2000,3000000'
     ].join('\n');
-    
+
     // Create blob and download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    
+
     link.setAttribute('href', url);
     link.setAttribute('download', 'template_import_electricity.csv');
     link.style.visibility = 'hidden';
-    
+
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    
+
     // Show success modal
     setShowDownloadModal(true);
   };
@@ -276,20 +281,20 @@ export default function ImportDataPage() {
         </div>
 
         {/* Page Header */}
-        <div style={{marginBottom: '49px'}}>
+        <div style={{ marginBottom: '49px' }}>
           {/* Title */}
-          <h1 className="font-bold text-black text-center mb-8" style={{fontSize: '48px'}}>
+          <h1 className="font-bold text-black text-center mb-8" style={{ fontSize: '48px' }}>
             Pilih Data
           </h1>
-          
+
           {/* Action Buttons - Sejajar dengan area drop file */}
           <div className="flex justify-center">
-            <div style={{width: '600px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <div style={{ width: '600px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <button
                 onClick={handleDownloadTemplate}
                 className="inline-flex items-center justify-center space-x-2 text-white rounded-lg font-medium transition-colors duration-200"
                 style={{
-                  backgroundColor: '#5EA127', 
+                  backgroundColor: '#5EA127',
                   fontSize: '20px',
                   width: '251px',
                   height: '45px'
@@ -313,12 +318,12 @@ export default function ImportDataPage() {
                   />
                 </svg>
               </button>
-              
+
               <button
                 onClick={handleSelectFile}
                 className="inline-flex items-center justify-center space-x-2 text-white rounded-lg font-medium transition-colors duration-200"
                 style={{
-                  backgroundColor: '#5EA127', 
+                  backgroundColor: '#5EA127',
                   fontSize: '20px',
                   width: '251px',
                   height: '45px'
@@ -349,9 +354,8 @@ export default function ImportDataPage() {
         {/* File Upload Zone */}
         <div className="flex justify-center">
           <div
-            className={`relative border-2 border-dashed rounded-lg transition-colors duration-200 ${
-              dragActive ? 'border-green-600' : ''
-            }`}
+            className={`relative border-2 border-dashed rounded-lg transition-colors duration-200 ${dragActive ? 'border-green-600' : ''
+              }`}
             style={{
               width: '600px',
               height: '300px',
@@ -375,7 +379,7 @@ export default function ImportDataPage() {
               onChange={handleFileChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
-            
+
             {/* Upload Icon */}
             <svg
               className="w-16 h-16 mb-6"
@@ -383,7 +387,7 @@ export default function ImportDataPage() {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
-              style={{color: '#646F61'}}
+              style={{ color: '#646F61' }}
             >
               <path
                 strokeLinecap="round"
@@ -392,9 +396,9 @@ export default function ImportDataPage() {
                 d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
               />
             </svg>
-            
+
             {/* Instruction Text */}
-            <p 
+            <p
               className="mb-2"
               style={{
                 color: '#646F61',
@@ -404,9 +408,9 @@ export default function ImportDataPage() {
             >
               {selectedFile ? selectedFile.name : 'Pilih file yang ingin anda inputkan'}
             </p>
-            
+
             {/* File Type Specification */}
-            <p 
+            <p
               style={{
                 color: '#646F61',
                 fontSize: '20px',
@@ -430,12 +434,12 @@ export default function ImportDataPage() {
               width: '600px',
               height: '45px'
             }}
-            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { 
+            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
               if (!e.currentTarget.disabled) {
                 e.currentTarget.style.backgroundColor = '#1a2f15';
               }
             }}
-            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { 
+            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.backgroundColor = '#172813';
             }}
           >
@@ -447,8 +451,8 @@ export default function ImportDataPage() {
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => { setShowSuccessModal(false); router.push('/electricity-bills'); }}></div>
-          <div 
+          <div className="absolute inset-0 backdrop-blur-md bg-white/20" onClick={() => { setShowSuccessModal(false); router.push('/electricity-bills'); }}></div>
+          <div
             className="relative bg-white rounded-lg"
             style={{
               width: '408px',
@@ -469,7 +473,7 @@ export default function ImportDataPage() {
               </svg>
             </button>
             <div className="flex justify-center mb-4">
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
                   backgroundColor: '#5EA127',
@@ -492,9 +496,9 @@ export default function ImportDataPage() {
 
       {/* Error Modal */}
       {showErrorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ paddingTop: '80px', top: 0 }}>
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowErrorModal(false)}></div>
-          <div 
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 backdrop-blur-md bg-white/20" onClick={() => setShowErrorModal(false)}></div>
+          <div
             className="relative bg-white rounded-lg p-6 max-w-md w-full mx-4"
             style={{
               boxShadow: '0 35px 60px -12px rgba(0, 0, 0, 0.5)',
@@ -532,14 +536,14 @@ export default function ImportDataPage() {
       {/* Download Success Modal */}
       {showDownloadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Background Blur Overlay */}
-          <div 
+          {/* Background Overlay */}
+          <div
             className="absolute inset-0 backdrop-blur-md bg-white/20"
             onClick={handleCloseDownloadModal}
           ></div>
-          
+
           {/* Modal Content */}
-          <div 
+          <div
             className="relative bg-white rounded-lg"
             style={{
               width: '408px',
@@ -563,7 +567,7 @@ export default function ImportDataPage() {
 
             {/* Success Icon */}
             <div className="flex justify-center mb-4">
-              <div 
+              <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
                   backgroundColor: '#5EA127',

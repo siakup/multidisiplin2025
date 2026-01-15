@@ -52,7 +52,7 @@ export default function LoginPage() {
         <section className="flex flex-col justify-center items-center h-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 bg-white py-10 sm:py-16">
           <div className="w-full max-w-md mx-auto">
             <div className="mb-8">
-              <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-left" style={{ color: 'var(--color-12250f)' }}>Selamat Datang!</h1>
+              <h1 className="text-2xl sm:text-3xl font-semibold mb-2 text-left text-brand-text-primary">Selamat Datang!</h1>
               <p className="text-gray-600 text-left text-sm sm:text-base">Silahkan masukkan role dan password anda.</p>
             </div>
             <form onSubmit={onSubmit} className="space-y-5 w-full">
@@ -64,7 +64,7 @@ export default function LoginPage() {
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   placeholder="Masukkan role"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:border-transparent transition-all focus-ring-colorblind"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:border-transparent transition-all focus:ring-brand-text-primary"
                   required
                 />
               </div>
@@ -77,7 +77,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="********"
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:border-transparent appearance-none transition-all focus-ring-colorblind"
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-10 focus:outline-none focus:ring-2 focus:border-transparent appearance-none transition-all focus:ring-brand-text-primary"
                     required
                   />
                   <button
@@ -107,10 +107,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg py-2.5 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base"
-                style={{ backgroundColor: 'var(--color-12250f)' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-1a2f15)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-12250f)'}
+                className="w-full rounded-lg py-2.5 text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors font-medium text-sm sm:text-base bg-brand-text-primary hover:bg-brand-secondary"
               >
                 {loading ? 'Memproses...' : 'Masuk'}
               </button>

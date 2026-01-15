@@ -51,6 +51,25 @@ export default function ElectricityBillsPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isColorBlindMode, setIsColorBlindMode] = useState(false);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [panelFilter, monthFilter]);
+
+  // Calculate pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentBills = bills.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(bills.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   useEffect(() => {
     fetchPanels();
     fetchBills();
@@ -249,6 +268,8 @@ export default function ElectricityBillsPage() {
     return null;
   }
 
+
+
   return (
     <div className="min-h-screen bg-white font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -270,8 +291,8 @@ export default function ElectricityBillsPage() {
                     onClick={() => setIsFilterOpen(!isFilterOpen)}
                     className={`flex items-center gap-1 px-3 py-2 rounded-md border transition-all duration-200 group
                     ${isFilterOpen
-                        ? 'bg-[#5EA127] text-white border-[#5EA127]'
-                        : 'bg-transparent text-gray-700 border-transparent hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white'
+                        ? 'bg-brand-primary text-white border-brand-primary'
+                        : 'bg-transparent text-gray-700 border-transparent hover:border-brand-primary hover:text-brand-primary hover:bg-white'
                       }
                   `}
                   >
@@ -291,8 +312,8 @@ export default function ElectricityBillsPage() {
                 onClick={() => setIsColorBlindMode(!isColorBlindMode)}
                 className={`flex items-center gap-1 px-3 py-2 rounded-md border transition-all duration-200 group
                   ${isColorBlindMode
-                    ? 'bg-[#5EA127] text-white border-[#5EA127]'
-                    : 'bg-transparent text-gray-700 border-transparent hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white'
+                    ? 'bg-brand-primary text-white border-brand-primary'
+                    : 'bg-transparent text-gray-700 border-transparent hover:border-brand-primary hover:text-brand-primary hover:bg-white'
                   }
                 `}
               >
@@ -314,7 +335,7 @@ export default function ElectricityBillsPage() {
               {/* Export */}
               <button
                 onClick={handleExportData}
-                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white active:bg-[#5EA127] active:text-white transition-all"
+                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-brand-primary hover:text-brand-primary hover:bg-white active:bg-brand-primary active:text-white transition-all"
               >
                 <img
                   src="/image/icons/ex-20.png"
@@ -327,7 +348,7 @@ export default function ElectricityBillsPage() {
               {/* Import */}
               <Link
                 href="/electricity-bills/import"
-                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white active:bg-[#5EA127] active:text-white transition-all"
+                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-brand-primary hover:text-brand-primary hover:bg-white active:bg-brand-primary active:text-white transition-all"
               >
                 <img
                   src="/image/icons/im-20.png"
@@ -340,7 +361,7 @@ export default function ElectricityBillsPage() {
               {/* Tambah Data */}
               <Link
                 href="/electricity-bills/input"
-                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-[#5EA127] hover:text-[#5EA127] hover:bg-white active:bg-[#5EA127] active:text-white transition-all"
+                className="group flex items-center gap-1 px-3 py-2 rounded-md border border-transparent text-gray-700 hover:border-brand-primary hover:text-brand-primary hover:bg-white active:bg-brand-primary active:text-white transition-all"
               >
                 <img
                   src="/image/icons/tambah-20.png"
@@ -369,8 +390,8 @@ export default function ElectricityBillsPage() {
                     }}
                     className={`px-4 py-1.5 rounded-full border text-sm font-medium transition-all duration-200 flex items-center gap-2
                       ${panelFilter === p.id
-                        ? 'bg-white text-[#5EA127] border-[#5EA127]'
-                        : 'bg-white text-gray-700 border-gray-400 hover:border-[#5EA127] hover:text-[#5EA127]'
+                        ? 'bg-white text-brand-primary border-brand-primary'
+                        : 'bg-white text-gray-700 border-gray-400 hover:border-brand-primary hover:text-brand-primary'
                       }
                     `}
                   >
@@ -391,31 +412,30 @@ export default function ElectricityBillsPage() {
         {/* Data Table */}
         <div className="w-full flex justify-center" style={{ marginTop: '39px' }}>
           <div className="w-full overflow-x-auto pb-4">
-            <div className="bg-white rounded-lg overflow-hidden mx-auto" style={{
+            <div className="bg-white rounded-lg overflow-hidden mx-auto border border-brand-secondary" style={{
               width: 'calc(170px + 17px + 170px + 532px + 210px)',
               minWidth: 'calc(170px + 17px + 170px + 532px + 210px)',
-              border: '1px solid #345915'
             }}>
               <table className="w-full" style={{ borderCollapse: 'collapse' }}>
                 {/* Table Header */}
-                <thead style={{ backgroundColor: isColorBlindMode ? '#172813' : '#93C06E' }}>
+                <thead style={{ backgroundColor: 'rgba(147, 192, 110, 0.5)' }}>
                   <tr>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
                       No.
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
                       Nama Panel
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
                       Bulan
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
                       kWh
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
                       Jumlah Tagihan
                     </th>
-                    <th className={`px-6 py-4 text-center border-b ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: '#345915' }}>
+                    <th className={`px-6 py-4 text-center border-b ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
                       Action
                     </th>
                   </tr>
@@ -442,29 +462,28 @@ export default function ElectricityBillsPage() {
                       </td>
                     </tr>
                   ) : (
-                    bills.map((bill, index) => (
+                    currentBills.map((bill, index) => (
                       <tr key={bill.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
-                          {index + 1}
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {indexOfFirstItem + index + 1}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
                           {bill.panel?.namePanel || '-'}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
                           {formatDate(bill.billingMonth)}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
                           {typeof bill.kwhUse === 'string' ? parseFloat(bill.kwhUse) : Number(bill.kwhUse)}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
                           {formatCurrency(typeof bill.totalBills === 'string' ? parseFloat(bill.totalBills) : Number(bill.totalBills))}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center" style={{ borderBottom: index === bills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center border-brand-secondary" style={{ borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid var(--color-brand-secondary)', fontSize: '20px' }}>
                           <div className="flex justify-center gap-2">
                             <button
-                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
+                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80 bg-brand-warning text-white"
                               style={{
-                                backgroundColor: isColorBlindMode ? '#2563EB' : '#F59E0B',
                                 width: '32px',
                                 height: '32px',
                                 padding: '0'
@@ -488,9 +507,8 @@ export default function ElectricityBillsPage() {
                               </svg>
                             </button>
                             <button
-                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80"
+                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80 bg-brand-danger text-white"
                               style={{
-                                backgroundColor: isColorBlindMode ? '#1F2937' : '#EF4444',
                                 width: '32px',
                                 height: '32px',
                                 padding: '0'
@@ -521,6 +539,49 @@ export default function ElectricityBillsPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {bills.length > itemsPerPage && (
+              <div className="flex justify-center items-center gap-4 mt-8">
+                {/* Previous Button */}
+                <button
+                  onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 text-gray-500 hover:text-brand-primary disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex items-center gap-4">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                    <button
+                      key={number}
+                      onClick={() => handlePageChange(number)}
+                      className={`text-xl font-medium transition-colors duration-200 ${currentPage === number
+                        ? 'text-brand-primary'
+                        : 'text-gray-400 hover:text-brand-primary'
+                        }`}
+                    >
+                      {number}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-gray-500 hover:text-brand-primary disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

@@ -3,7 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import NavbarSwitcher from "./components/NavbarSwitcher";
 import ColorblindModeProviderWrapper from "@/components/ColorblindModeProvider";
-import ColorblindModeToggle from "@/components/ColorblindModeToggle";
+import GlobalColorblindToggle from "@/components/GlobalColorblindToggle";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -12,8 +12,12 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Campus Facility Management System",
+  title: "CARLO Universitas Pertamina",
   description: "Manage campus facilities efficiently with our comprehensive system.",
+  icons: {
+    icon: "/image/logo_uper.png",
+    apple: "/image/logo_uper.png",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +34,7 @@ export default function RootLayout({
           <NavbarSwitcher />
           {children}
           {/* Fixed toggle button di kanan atas */}
-          <ColorblindModeToggle fixed />
+          <GlobalColorblindToggle />
         </ColorblindModeProviderWrapper>
       </body>
     </html>

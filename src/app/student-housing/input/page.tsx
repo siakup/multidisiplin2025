@@ -308,7 +308,7 @@ export default function StudentHousingInputPage() {
                   <input
                     type="month"
                     onChange={handlePeriodeChange}
-                    className="w-full border border-gray-300 rounded-md p-3 bg-white text-gray-700 focus:ring-3 focus:ring-green-300 appearance-none"
+                    className="w-full border border-gray-300 rounded-md p-3 bg-white text-gray-700 focus:ring-3 focus:ring-brand-accent appearance-none"
                   />
                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />
                 </div>
@@ -324,7 +324,7 @@ export default function StudentHousingInputPage() {
                   Nama Asrama
                 </label>
                 <select
-                  className="flex-1 border bg-white border-gray-300 rounded-md p-3 text-black focus:ring-2 focus:ring-green-300 w-full"
+                  className="flex-1 border bg-white border-gray-300 rounded-md p-3 text-black focus:ring-2 focus:ring-brand-accent w-full"
                   value={selectedDormId}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -442,7 +442,7 @@ export default function StudentHousingInputPage() {
                     setInputSource("bill");
                     setBill(rawValue);
                   }}
-                  className="w-full border border-gray-300 rounded-md p-3 pl-12 bg-white text-black focus:ring-3 focus:ring-green-300"
+                  className="w-full border border-gray-300 rounded-md p-3 pl-12 bg-white text-black focus:ring-3 focus:ring-brand-accent"
                 />
               </div>
             </div>
@@ -462,7 +462,7 @@ export default function StudentHousingInputPage() {
                     setInputSource("kwh");
                     setKWh(value);
                   }}
-                  className="w-full border border-gray-300 rounded-md p-3 bg-white text-black focus:ring-3 focus:ring-green-300"
+                  className="w-full border border-gray-300 rounded-md p-3 bg-white text-black focus:ring-3 focus:ring-brand-accent"
                 />
                 {isKwhOverLimit && (
                   <p className="text-sm text-red-600 mt-2">
@@ -491,8 +491,8 @@ export default function StudentHousingInputPage() {
                 onClick={handleSaveClick}
                 disabled={isKwhOverLimit || !!periodError || !!duplicateError}
                 className={`w-full sm:w-2/3 md:w-1/2 lg:w-1/3 py-4 rounded-md font-bold text-lg transition duration-200 ${isKwhOverLimit || periodError || duplicateError
-                    ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                    : "bg-black hover:bg-green-800 text-white shadow-lg"
+                  ? "bg-gray-400 cursor-not-allowed text-gray-200"
+                  : "bg-black hover:bg-green-800 text-white shadow-lg"
                   }`}
               >
                 Simpan Data

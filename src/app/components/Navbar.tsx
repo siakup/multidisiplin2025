@@ -65,7 +65,7 @@ export default function Navbar() {
           {/* Mobile menu toggle */}
           <div className="flex items-center gap-2 lg:hidden">
             <button
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[var(--color-172813)]"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-text-primary"
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle navigation"
             >
@@ -187,8 +187,8 @@ function NavItem({ href, active, children, mobile, onClick }: NavItemProps) {
     'flex items-center gap-2 transition-colors duration-200 px-4 py-2 rounded-lg border-2 font-semibold';
 
   const stateClass = active
-    ? 'border-[#172813] text-[#172813]'
-    : 'border-transparent text-gray-700 hover:border-[#d1d5db] hover:text-[#172813]';
+    ? 'border-brand-text-primary text-brand-text-primary'
+    : 'border-transparent text-gray-700 hover:border-gray-300 hover:text-brand-text-primary';
 
   const mobileClass = mobile ? 'w-full justify-start' : '';
 
