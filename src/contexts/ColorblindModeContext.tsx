@@ -6,23 +6,29 @@ export type ColorblindType = 'none' | 'deuteranopia';
 
 // Mapping warna: Original → Deuteranopia
 const COLOR_MAPPING: Record<string, { normal: string; deuteranopia: string }> = {
-  '#EFF6E9': { normal: '#EFF6E9', deuteranopia: '#F1F1EC' },
-  '#B9D6A1': { normal: '#B9D6A1', deuteranopia: '#C3C1B0' },
-  '#B8FF80': { normal: '#B8FF80', deuteranopia: '#D2CDA6' },
-  '#5EA127': { normal: '#5EA127', deuteranopia: '#77724B' },
-  '#345915': { normal: '#345915', deuteranopia: '#413F29' },
-  '#172813': { normal: '#172813', deuteranopia: '#1D1C19' },
+  // Backgrounds / Light Colors (Map to Blue-ish or Red-ish based on tone, or keep neutral if needed. User said "semua yg berwarna")
+  '#EFF6E9': { normal: '#EFF6E9', deuteranopia: '#EFF6E9' }, // Very light green -> Keep Neutral
+  '#B9D6A1': { normal: '#B9D6A1', deuteranopia: '#005AB5' }, // Light Green -> Blue
+  '#B8FF80': { normal: '#B8FF80', deuteranopia: '#005AB5' }, // Bright Green -> Blue
+
+  // Greens -> Blue (#005AB5)
+  '#345915': { normal: '#345915', deuteranopia: '#005AB5' },
+  '#172813': { normal: '#172813', deuteranopia: '#172813' }, // Dark Green (Text) -> Keep Neutral
+  '#12250F': { normal: '#12250F', deuteranopia: '#12250F' }, // Dark Green -> Keep Neutral
+  '#1a2f15': { normal: '#1a2f15', deuteranopia: '#1a2f15' }, // Dark Green -> Keep Neutral
+  '#5EA127': { normal: '#5EA127', deuteranopia: '#005AB5' },
+  '#6CB33F': { normal: '#6CB33F', deuteranopia: '#005AB5' },
+  '#93C06E': { normal: '#93C06E', deuteranopia: '#005AB5' },
+
+  // Reds / Oranges -> Red (#DC3220)
+  '#DA0000': { normal: '#DA0000', deuteranopia: '#DC3220' },
+  '#FF9500': { normal: '#FF9500', deuteranopia: '#DC3220' },
+  '#F59E0B': { normal: '#F59E0B', deuteranopia: '#DC3220' },
+  '#EF4444': { normal: '#EF4444', deuteranopia: '#DC3220' },
+  '#DC2626': { normal: '#DC2626', deuteranopia: '#DC3220' },
+
+  // Neutrals (Exclude from tinting if pure black/white, or tint if desired. Keeping Black neutral.)
   '#000000': { normal: '#000000', deuteranopia: '#000000' },
-  '#DA0000': { normal: '#DA0000', deuteranopia: '#889800' },
-  '#FF9500': { normal: '#FF9500', deuteranopia: '#D7DF2C' },
-  // Warna tambahan yang digunakan di aplikasi (mendekati warna di mapping)
-  '#12250F': { normal: '#12250F', deuteranopia: '#1D1C19' }, // Mendekati #172813
-  '#1a2f15': { normal: '#1a2f15', deuteranopia: '#1D1C19' }, // Hover dari #12250F
-  '#6CB33F': { normal: '#6CB33F', deuteranopia: '#77724B' }, // Mendekati #5EA127
-  // Facility Management mappings
-  '#F59E0B': { normal: '#F59E0B', deuteranopia: '#2563EB' }, // Edit button (Orange -> Blue)
-  '#EF4444': { normal: '#EF4444', deuteranopia: '#1F2937' }, // Delete button (Red -> Dark Gray)
-  '#93C06E': { normal: '#93C06E', deuteranopia: '#172813' }, // Table Header (Light Green -> Dark Green)
 };
 
 interface ColorblindModeContextType {
@@ -93,6 +99,3 @@ export function useColorblindMode() {
   }
   return context;
 }
-
-
-

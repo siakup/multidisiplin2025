@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { api } from '@/lib/common/utils/api';
+import { useColorblindMode } from '@/contexts/ColorblindModeContext';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -15,7 +16,7 @@ export default function DashboardPage() {
   useAutoLogout({ idleTime: 300000 });
 
 
-  const [dormRecords, setDormRecords] = useState<Array<{ period: string; billAmount: number }>>([]);
+  const [dormRecords, setDormRecords] = useState<Array<{ dormName: string; period: string; totalKwh: number; billAmount: number }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'facility-management' | 'student-housing'>('facility-management');
@@ -27,6 +28,8 @@ export default function DashboardPage() {
     'facility-management': '',
     'student-housing': '',
   });
+
+  const { colorblindType } = useColorblindMode();
 
   useEffect(() => {
     fetchData();
@@ -61,7 +64,12 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
       const dorm = await api.get<any[]>('/dorm-record');
-      setDormRecords((dorm || []).map((r) => ({ period: r.period, billAmount: Number(r.billAmount || r.billAmount || 0) })));
+      setDormRecords((dorm || []).map((r) => ({
+        dormName: r.dormName || '-',
+        period: r.period,
+        totalKwh: Number(r.totalKwh || 0),
+        billAmount: Number(r.billAmount || 0)
+      })));
     } catch (err: any) {
       console.error('Dashboard fetch error:', err);
       setError(err.message || 'Gagal memuat data');
@@ -110,10 +118,13 @@ export default function DashboardPage() {
       return;
     }
 
-    const headers = ['Period', 'Bill Amount (IDR)'];
-    const rows = dormRecords.map(record => [
-      formatDate(record.period),
-      formatCurrency(record.billAmount)
+    const headers = ['No', 'Nama Asrama', 'Bulan', 'kWh', 'Jumlah Tagihan'];
+    const rows = dormRecords.map((record, index) => [
+      index + 1,
+      `"${record.dormName}"`,
+      `"${formatDate(record.period)}"`,
+      record.totalKwh.toString().replace('.', ','),
+      `"${formatCurrency(record.billAmount)}"`
     ]);
 
     let csvContent = headers.join(',') + '\n';
@@ -148,18 +159,29 @@ export default function DashboardPage() {
     doc.text(`Generated: ${new Date().toLocaleDateString('id-ID')}`, 14, 30);
 
     // Prepare table data
-    const tableData = dormRecords.map(record => [
+    const tableData = dormRecords.map((record, index) => [
+      index + 1,
+      record.dormName,
       formatDate(record.period),
+      record.totalKwh.toLocaleString('id-ID'),
       formatCurrency(record.billAmount)
     ]);
 
     // Add table
     autoTable(doc, {
-      head: [['Period', 'Bill Amount (IDR)']],
+      head: [['No', 'Nama Asrama', 'Bulan', 'kWh', 'Jumlah Tagihan']],
       body: tableData,
       startY: 35,
       theme: 'grid',
-      headStyles: { fillColor: [94, 161, 39] }, // Student Housing green color
+      headStyles: { fillColor: colorblindType === 'deuteranopia' ? [0, 90, 181] : [94, 161, 39] }, // Blue or Green
+      styles: { fontSize: 10, cellPadding: 3 },
+      columnStyles: {
+        0: { halign: 'center', cellWidth: 15 }, // No
+        1: { cellWidth: 'auto' }, // Nama Asrama
+        2: { cellWidth: 'auto' }, // Bulan
+        3: { halign: 'right' }, // kWh
+        4: { halign: 'right' }  // Jumlah Tagihan
+      }
     });
 
     doc.save(`student_housing_report_${new Date().toISOString().split('T')[0]}.pdf`);

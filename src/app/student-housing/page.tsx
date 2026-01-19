@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { useColorblindMode } from '@/contexts/ColorblindModeContext';
 
 interface DormRecord {
   id: string;
@@ -18,6 +19,7 @@ interface DormRecord {
 
 export default function StudentHousingPage() {
   useAutoLogout({ idleTime: 300000 });
+  const { getColor } = useColorblindMode();
 
   const router = useRouter();
   const [records, setRecords] = useState<DormRecord[]>([]);
@@ -121,142 +123,153 @@ export default function StudentHousingPage() {
         </h1>
 
         {/* Action Buttons */}
-        <div className="flex justify-end mb-4">
-          <Link
-            href="/student-housing/input"
-            className="inline-flex items-center space-x-2 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 bg-brand-primary hover:bg-brand-secondary"
-            style={{ fontSize: '20px' }}
-          >
-            <span>Tambah Data</span>
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+        <div className="w-full flex justify-center mb-4">
+          <div className="flex justify-end" style={{
+            width: 'calc(170px + 17px + 170px + 532px + 210px)',
+            minWidth: 'calc(170px + 17px + 170px + 532px + 210px)',
+          }}>
+            <Link
+              href="/student-housing/input"
+              className="inline-flex items-center space-x-2 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 hover:bg-brand-secondary"
+              style={{ fontSize: '20px', backgroundColor: getColor('#5EA127') }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-              />
-            </svg>
-          </Link>
+              <span>Tambah Data</span>
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                />
+              </svg>
+            </Link>
+          </div>
         </div>
 
         {/* Data Table */}
-        <div className="flex justify-center" style={{ marginTop: '39px' }}>
-          <div
-            className="bg-white rounded-lg overflow-hidden border border-brand-secondary"
-          >
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-brand-secondary">
-                <tr>
-                  <th
-                    className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
-                    style={{ width: '80px' }}
-                  >
-                    No
-                  </th>
-                  <th
-                    className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
-                    style={{ width: '250px' }}
-                  >
-                    Nama Asrama
-                  </th>
-                  <th
-                    className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
-                    style={{ width: '180px' }}
-                  >
-                    Bulan
-                  </th>
-                  <th
-                    className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
-                    style={{ width: '150px' }}
-                  >
-                    kWh
-                  </th>
-                  <th
-                    className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
-                    style={{ width: '200px' }}
-                  >
-                    Jumlah Tagihan
-                  </th>
-                  <th
-                    className="px-6 py-4 text-center text-sm font-bold text-white uppercase tracking-wider"
-                    style={{ width: '120px' }}
-                  >
-                    Aksi
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {loading && (
+        <div className="w-full flex justify-center" style={{ marginTop: '39px' }}>
+          <div className="w-full overflow-x-auto pb-4">
+            <div className="bg-white rounded-lg overflow-hidden mx-auto border border-brand-secondary" style={{
+              width: 'calc(170px + 17px + 170px + 532px + 210px)',
+              minWidth: 'calc(170px + 17px + 170px + 532px + 210px)',
+            }}>
+              <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+                <thead style={{ backgroundColor: getColor('#93C06E') }}>
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center">
-                      <div className="flex justify-center items-center">
-                        <div className="text-gray-500">Memuat data...</div>
-                      </div>
-                    </td>
+                    <th className="px-6 py-4 text-center border-b border-r text-gray-900" style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                      No
+                    </th>
+                    <th className="px-6 py-4 text-center border-b border-r text-gray-900" style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                      Nama Asrama
+                    </th>
+                    <th className="px-6 py-4 text-center border-b border-r text-gray-900" style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                      Bulan
+                    </th>
+                    <th className="px-6 py-4 text-center border-b border-r text-gray-900" style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                      kWh
+                    </th>
+                    <th className="px-6 py-4 text-center border-b border-r text-gray-900" style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                      Jumlah Tagihan
+                    </th>
+                    <th className="px-6 py-4 text-center border-b text-gray-900" style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                      Aksi
+                    </th>
                   </tr>
-                )}
-
-                {error && (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center">
-                      <div className="text-red-500">{error}</div>
-                    </td>
-                  </tr>
-                )}
-
-                {!loading && !error && records.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center">
-                      <div className="text-gray-500">Belum ada data</div>
-                    </td>
-                  </tr>
-                )}
-
-                {!loading &&
-                  !error &&
-                  records.map((record, index) => (
-                    <tr key={record.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <td className="px-6 py-4 text-center" style={{ fontSize: '14px' }}>
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 text-center" style={{ fontSize: '14px' }}>
-                        {record.dormName}
-                      </td>
-                      <td className="px-6 py-4 text-center" style={{ fontSize: '14px' }}>
-                        {formatDate(record.period)}
-                      </td>
-                      <td className="px-6 py-4 text-center" style={{ fontSize: '14px' }}>
-                        {record.totalKwh.toLocaleString('id-ID')}
-                      </td>
-                      <td className="px-6 py-4 text-center" style={{ fontSize: '14px' }}>
-                        {formatCurrency(record.billAmount)}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => handleDeleteClick(record)}
-                          className="text-red-600 hover:text-red-800 font-medium"
-                          style={{ fontSize: '14px' }}
-                        >
-                          Hapus
-                        </button>
+                </thead>
+                <tbody className="bg-white">
+                  {loading && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center" style={{ fontSize: '20px' }}>
+                        <div className="flex justify-center items-center">
+                          <div className="text-gray-500">Memuat data...</div>
+                        </div>
                       </td>
                     </tr>
-                  ))}
-              </tbody>
-            </table>
+                  )}
+
+                  {error && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center" style={{ fontSize: '20px' }}>
+                        <div className="text-red-500">{error}</div>
+                      </td>
+                    </tr>
+                  )}
+
+                  {!loading && !error && records.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center" style={{ fontSize: '20px' }}>
+                        <div className="text-gray-500">Belum ada data</div>
+                      </td>
+                    </tr>
+                  )}
+
+                  {!loading &&
+                    !error &&
+                    records.map((record, index) => (
+                      <tr key={record.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === records.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === records.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {record.dormName}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === records.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {formatDate(record.period)}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === records.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {record.totalKwh.toLocaleString('id-ID')}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === records.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                          {formatCurrency(record.billAmount)}
+                        </td>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center border-brand-secondary" style={{ borderBottom: index === records.length - 1 ? 'none' : '1px solid var(--color-brand-secondary)', fontSize: '20px' }}>
+                          <div className="flex justify-center gap-2">
+                            <button
+                              className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80 text-white"
+                              style={{
+                                width: '32px',
+                                height: '32px',
+                                padding: '0',
+                                backgroundColor: getColor('#EF4444')
+                              }}
+                              onClick={() => handleDeleteClick(record)}
+                              title="Delete"
+                            >
+                              <svg
+                                className="w-5 h-5 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md text-center shadow-xl">
             <div className="text-yellow-500 text-5xl mb-4">⚠</div>
             <h3 className="text-xl font-bold mb-4">Konfirmasi Hapus</h3>
@@ -272,7 +285,8 @@ export default function StudentHousingPage() {
               </button>
               <button
                 onClick={handleConfirmDelete}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold"
+                className="px-6 py-2 text-white rounded-lg hover:opacity-90 font-semibold"
+                style={{ backgroundColor: getColor('#EF4444') }}
               >
                 Hapus
               </button>
@@ -283,14 +297,15 @@ export default function StudentHousingPage() {
 
       {/* Delete Success Modal */}
       {showDeleteSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md text-center shadow-xl">
             <div className="text-green-500 text-5xl mb-4">✓</div>
             <h3 className="text-xl font-bold mb-2">Berhasil Dihapus!</h3>
             <p className="text-gray-600 mb-4">Data berhasil dihapus dari sistem</p>
             <button
               onClick={() => setShowDeleteSuccessModal(false)}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold"
+              className="px-6 py-2 text-white rounded-lg hover:opacity-90 font-semibold"
+              style={{ backgroundColor: getColor('#5EA127') }}
             >
               OK
             </button>
@@ -300,7 +315,7 @@ export default function StudentHousingPage() {
 
       {/* Delete Error Modal */}
       {showDeleteErrorModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md text-center shadow-xl">
             <div className="text-red-500 text-5xl mb-4">✕</div>
             <h3 className="text-xl font-bold mb-2">Gagal Menghapus</h3>
@@ -310,7 +325,8 @@ export default function StudentHousingPage() {
                 setShowDeleteErrorModal(false);
                 setDeleteErrorMessage('');
               }}
-              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold"
+              className="px-6 py-2 text-white rounded-lg hover:opacity-90 font-semibold"
+              style={{ backgroundColor: getColor('#EF4444') }}
             >
               OK
             </button>
