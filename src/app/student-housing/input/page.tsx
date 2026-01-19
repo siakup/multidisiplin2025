@@ -420,7 +420,7 @@ export default function StudentHousingInputPage() {
                 </div>
                 <div className="flex justify-end gap-3 mt-4">
                   <button type="button" onClick={() => setShowAddDorm(false)} className="bg-gray-300 px-6 py-2 rounded-md font-medium">Batal</button>
-                  <button type="button" onClick={handleAddDorm} className="bg-green-600 text-white px-6 py-2 rounded-md font-medium">Simpan</button>
+                  <button type="button" onClick={handleAddDorm} className="bg-brand-primary text-white px-6 py-2 rounded-md font-medium hover:bg-brand-secondary transition-colors">Simpan</button>
                 </div>
               </div>
             )}
@@ -476,10 +476,10 @@ export default function StudentHousingInputPage() {
             {isKwhValid && (
               <div className="flex flex-col md:flex-row items-start gap-4">
                 <div className="w-full md:w-80" />
-                <div className="flex-1 bg-green-50 border border-green-300 rounded-lg p-6">
+                <div className="flex-1 bg-brand-accent/20 border border-brand-accent rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-black mb-2">Emisi Karbon (Otomatis)</h3>
-                  <p className="text-3xl font-bold text-green-800">{emission.toFixed(2)} kg CO₂e</p>
-                  <p className="text-sm text-green-700 mt-2">Faktor emisi: {EMISSION_FACTOR} kg CO₂e/kWh</p>
+                  <p className="text-3xl font-bold text-brand-secondary">{emission.toFixed(2)} kg CO₂e</p>
+                  <p className="text-sm text-brand-primary mt-2">Faktor emisi: {EMISSION_FACTOR} kg CO₂e/kWh</p>
                 </div>
               </div>
             )}
@@ -492,7 +492,7 @@ export default function StudentHousingInputPage() {
                 disabled={isKwhOverLimit || !!periodError || !!duplicateError}
                 className={`w-full sm:w-2/3 md:w-1/2 lg:w-1/3 py-4 rounded-md font-bold text-lg transition duration-200 ${isKwhOverLimit || periodError || duplicateError
                   ? "bg-gray-400 cursor-not-allowed text-gray-200"
-                  : "bg-black hover:bg-green-800 text-white shadow-lg"
+                  : "bg-black hover:bg-brand-secondary text-white shadow-lg"
                   }`}
               >
                 Simpan Data
@@ -518,8 +518,8 @@ export default function StudentHousingInputPage() {
       {/* Success Modal */}
       {showSuccess && (
         <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50 bg-black/10">
-          <div className="bg-white rounded-xl p-8 w-[400px] text-center shadow-2xl border border-green-100 animate-in fade-in zoom-in duration-200">
-            <CheckCircle className="text-green-500 w-16 h-16 mx-auto mb-4" />
+          <div className="bg-white rounded-xl p-8 w-[400px] text-center shadow-2xl border border-brand-accent animate-in fade-in zoom-in duration-200">
+            <CheckCircle className="text-brand-primary w-16 h-16 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900">Data berhasil disimpan!</p>
           </div>
         </div>

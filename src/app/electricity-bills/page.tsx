@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
 import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
+import { useColorblindMode } from '@/contexts/ColorblindModeContext';
 
 interface ElectricityBill {
   id: number;
@@ -49,7 +50,8 @@ export default function ElectricityBillsPage() {
   const [showDeleteErrorModal, setShowDeleteErrorModal] = useState(false);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState<string>('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isColorBlindMode, setIsColorBlindMode] = useState(false);
+  const { colorblindType, setColorblindType, getColor } = useColorblindMode();
+  const isColorBlindMode = colorblindType === 'deuteranopia';
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -309,7 +311,7 @@ export default function ElectricityBillsPage() {
 
               {/* Mode Buta Warna */}
               <button
-                onClick={() => setIsColorBlindMode(!isColorBlindMode)}
+                onClick={() => setColorblindType(isColorBlindMode ? 'none' : 'deuteranopia')}
                 className={`flex items-center gap-1 px-3 py-2 rounded-md border transition-all duration-200 group
                   ${isColorBlindMode
                     ? 'bg-brand-primary text-white border-brand-primary'
@@ -418,24 +420,24 @@ export default function ElectricityBillsPage() {
             }}>
               <table className="w-full" style={{ borderCollapse: 'collapse' }}>
                 {/* Table Header */}
-                <thead style={{ backgroundColor: 'rgba(147, 192, 110, 0.5)' }}>
+                <thead style={{ backgroundColor: getColor('#93C06E') }}>
                   <tr>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: getColor('#345915') }}>
                       No.
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: getColor('#345915') }}>
                       Nama Panel
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: getColor('#345915') }}>
                       Bulan
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: getColor('#345915') }}>
                       kWh
                     </th>
-                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                    <th className={`px-6 py-4 text-center border-b border-r ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: getColor('#345915') }}>
                       Jumlah Tagihan
                     </th>
-                    <th className={`px-6 py-4 text-center border-b ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: 'rgba(52, 89, 21, 0.8)' }}>
+                    <th className={`px-6 py-4 text-center border-b ${isColorBlindMode ? 'text-white' : 'text-gray-900'}`} style={{ fontSize: '20px', fontWeight: '600', borderColor: getColor('#345915') }}>
                       Action
                     </th>
                   </tr>
@@ -464,22 +466,22 @@ export default function ElectricityBillsPage() {
                   ) : (
                     currentBills.map((bill, index) => (
                       <tr key={bill.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderRightColor: getColor('#345915'), borderBottom: index === currentBills.length - 1 ? 'none' : `1px solid ${getColor('#345915')}`, fontSize: '20px' }}>
                           {indexOfFirstItem + index + 1}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderRightColor: getColor('#345915'), borderBottom: index === currentBills.length - 1 ? 'none' : `1px solid ${getColor('#345915')}`, fontSize: '20px' }}>
                           {bill.panel?.namePanel || '-'}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderRightColor: getColor('#345915'), borderBottom: index === currentBills.length - 1 ? 'none' : `1px solid ${getColor('#345915')}`, fontSize: '20px' }}>
                           {formatDate(bill.billingMonth)}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderRightColor: getColor('#345915'), borderBottom: index === currentBills.length - 1 ? 'none' : `1px solid ${getColor('#345915')}`, fontSize: '20px' }}>
                           {typeof bill.kwhUse === 'string' ? parseFloat(bill.kwhUse) : Number(bill.kwhUse)}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderColor: '#345915', borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid #345915', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 border-r text-center" style={{ borderRightColor: getColor('#345915'), borderBottom: index === currentBills.length - 1 ? 'none' : `1px solid ${getColor('#345915')}`, fontSize: '20px' }}>
                           {formatCurrency(typeof bill.totalBills === 'string' ? parseFloat(bill.totalBills) : Number(bill.totalBills))}
                         </td>
-                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center border-brand-secondary" style={{ borderBottom: index === currentBills.length - 1 ? 'none' : '1px solid var(--color-brand-secondary)', fontSize: '20px' }}>
+                        <td className="px-6 py-6 whitespace-nowrap text-gray-900 text-center border-brand-secondary" style={{ borderBottom: index === currentBills.length - 1 ? 'none' : `1px solid ${getColor('#345915')}`, fontSize: '20px' }}>
                           <div className="flex justify-center gap-2">
                             <button
                               className="flex items-center justify-center rounded transition-colors duration-200 hover:opacity-80 bg-brand-warning text-white"
@@ -618,8 +620,8 @@ export default function ElectricityBillsPage() {
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{
-                    backgroundColor: '#5EA127',
-                    boxShadow: '0 15px 35px -5px rgba(94, 161, 39, 0.6), 0 0 0 1px rgba(94, 161, 39, 0.2)'
+                    backgroundColor: getColor('#5EA127'),
+                    boxShadow: `0 15px 35px -5px ${getColor('#5EA127')}99, 0 0 0 1px ${getColor('#5EA127')}33`
                   }}
                 >
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -670,8 +672,8 @@ export default function ElectricityBillsPage() {
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{
-                    backgroundColor: '#ef4444',
-                    boxShadow: '0 15px 35px -5px rgba(239, 68, 68, 0.6), 0 0 0 1px rgba(239, 68, 68, 0.2)'
+                    backgroundColor: getColor('#ef4444'),
+                    boxShadow: `0 15px 35px -5px ${getColor('#ef4444')}99, 0 0 0 1px ${getColor('#ef4444')}33`
                   }}
                 >
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -720,8 +722,8 @@ export default function ElectricityBillsPage() {
                 <div
                   className="w-16 h-16 rounded-full flex items-center justify-center"
                   style={{
-                    backgroundColor: '#EF4444',
-                    boxShadow: '0 15px 35px -5px rgba(239, 68, 68, 0.6), 0 0 0 1px rgba(239, 68, 68, 0.2)'
+                    backgroundColor: getColor('#EF4444'),
+                    boxShadow: `0 15px 35px -5px ${getColor('#EF4444')}99, 0 0 0 1px ${getColor('#EF4444')}33`
                   }}
                 >
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -763,10 +765,10 @@ export default function ElectricityBillsPage() {
                   onClick={handleConfirmDelete}
                   className="px-6 py-2.5 rounded-lg font-medium text-white transition-colors duration-200"
                   style={{
-                    backgroundColor: '#EF4444'
+                    backgroundColor: getColor('#EF4444')
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#DC2626'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#EF4444'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = getColor('#DC2626'); }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = getColor('#EF4444'); }}
                 >
                   Hapus
                 </button>

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
 import { useRequireAuth } from '@/lib/hooks/useRequireAuth';
+import { useColorblindMode } from '@/contexts/ColorblindModeContext';
 
 export default function ImportDataPage() {
   // Auto logout setelah 5 menit tidak ada aktivitas
@@ -25,6 +26,7 @@ export default function ImportDataPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
+  const { getColor } = useColorblindMode();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -294,13 +296,13 @@ export default function ImportDataPage() {
                 onClick={handleDownloadTemplate}
                 className="inline-flex items-center justify-center space-x-2 text-white rounded-lg font-medium transition-colors duration-200"
                 style={{
-                  backgroundColor: '#5EA127',
+                  backgroundColor: getColor('#5EA127'),
                   fontSize: '20px',
                   width: '251px',
                   height: '45px'
                 }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#6bb52d'; }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#5EA127'; }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = getColor('#6bb52d'); }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = getColor('#5EA127'); }}
               >
                 <span>Unduh Template</span>
                 <svg
@@ -323,13 +325,13 @@ export default function ImportDataPage() {
                 onClick={handleSelectFile}
                 className="inline-flex items-center justify-center space-x-2 text-white rounded-lg font-medium transition-colors duration-200"
                 style={{
-                  backgroundColor: '#5EA127',
+                  backgroundColor: getColor('#5EA127'),
                   fontSize: '20px',
                   width: '251px',
                   height: '45px'
                 }}
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#6bb52d'; }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = '#5EA127'; }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = getColor('#6bb52d'); }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => { e.currentTarget.style.backgroundColor = getColor('#5EA127'); }}
               >
                 <span>Pilih File</span>
                 <svg
@@ -363,8 +365,8 @@ export default function ImportDataPage() {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: dragActive ? '#EFF6E9' : '#EFF6E9',
-              borderColor: '#5EA127'
+              backgroundColor: dragActive ? getColor('#EFF6E9') : getColor('#EFF6E9'),
+              borderColor: getColor('#5EA127')
             }}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -429,18 +431,18 @@ export default function ImportDataPage() {
             disabled={importing || !selectedFile}
             className="inline-flex items-center justify-center text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: '#172813',
+              backgroundColor: getColor('#172813'),
               fontSize: '20px',
               width: '600px',
               height: '45px'
             }}
             onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
               if (!e.currentTarget.disabled) {
-                e.currentTarget.style.backgroundColor = '#1a2f15';
+                e.currentTarget.style.backgroundColor = getColor('#1a2f15');
               }
             }}
             onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.currentTarget.style.backgroundColor = '#172813';
+              e.currentTarget.style.backgroundColor = getColor('#172813');
             }}
           >
             <span>{importing ? 'Mengimport...' : 'Import Data'}</span>
@@ -476,8 +478,8 @@ export default function ImportDataPage() {
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
-                  backgroundColor: '#5EA127',
-                  boxShadow: '0 15px 35px -5px rgba(94, 161, 39, 0.6), 0 0 0 1px rgba(94, 161, 39, 0.2)'
+                  backgroundColor: getColor('#5EA127'),
+                  boxShadow: `0 15px 35px -5px ${getColor('#5EA127')}99, 0 0 0 1px ${getColor('#5EA127')}33`
                 }}
               >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -570,8 +572,8 @@ export default function ImportDataPage() {
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
-                  backgroundColor: '#5EA127',
-                  boxShadow: '0 15px 35px -5px rgba(94, 161, 39, 0.6), 0 0 0 1px rgba(94, 161, 39, 0.2)'
+                  backgroundColor: getColor('#5EA127'),
+                  boxShadow: `0 15px 35px -5px ${getColor('#5EA127')}99, 0 0 0 1px ${getColor('#5EA127')}33`
                 }}
               >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

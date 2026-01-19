@@ -25,24 +25,27 @@
 }
 
 /* Mode Deuteranopia */
+/* Mode Deuteranopia */
 html.colorblind-deuteranopia {
-  --color-eff6e9: #F1F1EC;
-  --color-b9d6a1: #C3C1B0;
-  --color-b8ff80: #D2CDA6;
-  --color-5ea127: #77724B;
-  --color-345915: #413F29;
-  --color-172813: #1D1C19;
-  --color-000000: #000000;
-  --color-da0000: #889800;
-  --color-ff9500: #D7DF2C;
-  --color-12250f: #1D1C19;
-  --color-1a2f15: #1D1C19;
-  --color-6cb33f: #77724B;
+  /* Backgrounds / Light Colors -> Keep Neutral/Original */
+  --color-eff6e9: #EFF6E9;
+  --color-b9d6a1: #005AB5;
+  --color-b8ff80: #005AB5;
 
-  /* Facility Management specific */
-  --color-ef4444: #1F2937;
-  --color-f59e0b: #2563EB;
-  --color-93c06e: #172813;
+  /* Greens -> Blue */
+  --color-5ea127: #005AB5;
+  --color-345915: #005AB5;
+  --color-172813: #172813;
+  --color-12250f: #12250F;
+  --color-1a2f15: #1a2f15;
+  --color-6cb33f: #005AB5;
+  --color-93c06e: #005AB5;
+
+  /* Reds / Oranges -> Red */
+  --color-da0000: #DC3220;
+  --color-ff9500: #DC3220;
+  --color-f59e0b: #DC3220;
+  --color-ef4444: #DC3220;
 }
 
 @theme inline {

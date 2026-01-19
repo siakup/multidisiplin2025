@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/common/utils/api';
 import { useAutoLogout } from '@/lib/hooks/useAutoLogout';
+import { useColorblindMode } from '@/contexts/ColorblindModeContext';
 
 interface Panel {
   id: number;
@@ -35,6 +36,7 @@ export default function ElectricityBillsEditPage() {
   const router = useRouter();
   const params = useParams();
   const billId = params?.id ? parseInt(params.id as string, 10) : null;
+  const { getColor } = useColorblindMode();
 
   const [formData, setFormData] = useState({
     namaPanel: '',
@@ -229,19 +231,19 @@ export default function ElectricityBillsEditPage() {
         select option:hover,
         select option:active,
         select option:focus {
-          background-color: #D0E7BD !important;
+          background-color: ${getColor('#EFF6E9')} !important;
           color: black !important;
         }
         select option:checked {
-          background-color: #D0E7BD !important;
+          background-color: ${getColor('#EFF6E9')} !important;
           color: black !important;
         }
         select:focus option:checked {
-          background-color: #D0E7BD !important;
+          background-color: ${getColor('#EFF6E9')} !important;
           color: black !important;
         }
         select:focus option:hover {
-          background-color: #D0E7BD !important;
+          background-color: ${getColor('#EFF6E9')} !important;
           color: black !important;
         }
         input[type="month"]:invalid {
@@ -368,7 +370,7 @@ export default function ElectricityBillsEditPage() {
                           color: 'black',
                           fontSize: '16px'
                         }}
-                        onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = '#D0E7BD'; }}
+                        onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = getColor('#EFF6E9'); }}
                         onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => { e.currentTarget.style.backgroundColor = 'white'; }}
                         onClick={() => handleSelectOption(panel)}
                       >
@@ -468,7 +470,7 @@ export default function ElectricityBillsEditPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60 bg-brand-text-primary hover:bg-brand-secondary"
+                className="text-white rounded-lg font-medium transition-colors duration-200 disabled:opacity-60 bg-brand-primary hover:bg-brand-secondary"
                 style={{
                   width: '500px',
                   height: '45px',
@@ -519,8 +521,8 @@ export default function ElectricityBillsEditPage() {
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
-                  backgroundColor: '#5EA127',
-                  boxShadow: '0 15px 35px -5px rgba(94, 161, 39, 0.6), 0 0 0 1px rgba(94, 161, 39, 0.2)'
+                  backgroundColor: getColor('#5EA127'),
+                  boxShadow: `0 15px 35px -5px ${getColor('#5EA127')}99, 0 0 0 1px ${getColor('#5EA127')}33`
                 }}
               >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -572,8 +574,8 @@ export default function ElectricityBillsEditPage() {
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
                 style={{
-                  backgroundColor: '#ef4444',
-                  boxShadow: '0 15px 35px -5px rgba(239, 68, 68, 0.6), 0 0 0 1px rgba(239, 68, 68, 0.2)'
+                  backgroundColor: getColor('#ef4444'),
+                  boxShadow: `0 15px 35px -5px ${getColor('#ef4444')}99, 0 0 0 1px ${getColor('#ef4444')}33`
                 }}
               >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
