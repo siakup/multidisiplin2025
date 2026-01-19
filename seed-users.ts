@@ -53,6 +53,41 @@ async function main() {
             console.error(`❌ Failed to seed panel ${p.name}:`, err.message);
         }
     }
+
+
+    const sqlFiles = [
+        'insert_dorms.sql',
+        'insert_dorm_records_1.sql',
+        'insert_dorm_records_2.sql'
+    ];
+
+    console.log('🌱 Seeding SQL Files...');
+    const path = require('path');
+    const fs = require('fs');
+
+    for (const file of sqlFiles) {
+        const filePath = path.join(__dirname, 'database', file);
+        if (fs.existsSync(filePath)) {
+            console.log(`__ Executing ${file}...`);
+            try {
+                const sql = fs.readFileSync(filePath, 'utf-8');
+                // Split by semicolon to handle multiple statements if necessary, 
+                // but executeRawUnsafe might handle it depending on the driver. 
+                // For simplicity and matching typical raw SQL dumps, we try executing the whole file.
+                // If the file contains multiple statements, Postgres usually requires them to be executed separately 
+                // or implicitly handles them. safer to just execute the whole string if it's a valid script.
+                // However, Prisma's executeRawUnsafe usually executes a single statement.
+                // If these files are large dumps with multiple INSERTs, we might need to split them.
+                // Assuming they are standard SQL dumps.
+                await prisma.$executeRawUnsafe(sql);
+                console.log(`✅ Executed ${file}`);
+            } catch (err: any) {
+                console.error(`❌ Failed to execute ${file}:`, err.message);
+            }
+        } else {
+            console.warn(`⚠️ File not found: ${filePath}`);
+        }
+    }
 }
 
 main()
